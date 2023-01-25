@@ -29,12 +29,12 @@ datamodule :
   dataset :
     name : 'MRSImaOlnyDataset'
     params : 
-      data_dir : "D:/study_d/project/brain/code/data/image"
+      data_dir : "data/total2"
   
   data_load_params :
-    train_path : "D:/study_d/project/brain/code/data/annotation/train.csv"
-    val_path : "D:/study_d/project/brain/code/data/annotation/val.csv"
-    test_path : "D:/study_d/project/brain/code/data/annotation//test.csv"
+    train_path : "data/total2/train.csv"
+    val_path : "data/total2/val.csv"
+    test_path : "data/total2/test.csv"
 
   dataloader : 
     name :
