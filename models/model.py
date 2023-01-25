@@ -11,6 +11,18 @@ class R2plus1d_18(nn.Module):
     def forward(self, x):
         x = self.model(x)
         return x
+    
+
+class Mc3_18(nn.Module):
+    def __init__(self, num_classes=2) -> None:
+        super().__init__()
+        self.model =torchvision.models.video.mc3_18(pretrained=True)
+        self.model.stem[0] = nn.Conv3d(3, 64, kernel_size=(3, 7, 7), stride=(1, 2, 2), padding=(1, 3, 3), bias=False)
+        self.model.fc = nn.Linear(512, num_classes)
+    
+    def forward(self, x):
+        x = self.model(x)
+        return x
 
 
         
