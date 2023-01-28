@@ -12,3 +12,4 @@ wandb
 visdom
 torchnet
 imageio
+scikit-image
