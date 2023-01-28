@@ -170,7 +170,7 @@ def main():
         label_list = []
         
         pbar = tqdm(train_loader, ascii=True) ## loder를 tqdm으로 설정 
-   
+        
         for i, (imgs, labels, ID) in enumerate(pbar):
             imgs = torch.cat([imgs[0],imgs[1]],dim=0) #2*bsz,256,256  ## agementation한 이미지를 합쳐서 넣어주는 과정인거 같은데 아마 한개의 batch로 합칠려는 거 같음 
             #imgs = imgs.unsqueeze(1).float().cuda() #2*bsz,1,256,256 ## ct이미지라서 저렇게 한거 같긴한데 의문점은 3d를 사용했는데 왜 차원은 2차원으로 적어둔거지? 
@@ -234,6 +234,7 @@ def val1(net, val_loader, epoch):
     con_matx = meter.ConfusionMeter(args.n_classes)
     pred_list = []
     label_list = []
+    pred_pob_list =[]
   
     pbar = tqdm(val_loader, ascii=True)
     for i, (data, label,id) in enumerate(pbar):
@@ -245,6 +246,7 @@ def val1(net, val_loader, epoch):
         _, predicted = pred.max(1)
 
         pred_list.append(predicted.cpu().detach())
+        pred_pob_list.append(pred.cpu().detach())
         label_list.append(label.cpu().detach())
 
         total += data.size(0)
@@ -256,15 +258,15 @@ def val1(net, val_loader, epoch):
     recall = recall_score(torch.cat(label_list).numpy(), torch.cat(pred_list).numpy(),average=None)
     precision = precision_score(torch.cat(label_list).numpy(), torch.cat(pred_list).numpy(),average=None)
     f1 = f1_score(torch.cat(label_list).numpy(), torch.cat(pred_list).numpy(),average='macro')
-    auc = auroc(torch.cat(label_list).numpy(), torch.cat(pred_list).numpy(),task='multiclass', num_classes=args.n_classes)
-    f1_micro = multiclass_f1_score(torch.cat(label_list).numpy(), torch.cat(pred_list).numpy(),num_classes=args.n_classes, average='micro')
+    auc = auroc(torch.cat(pred_pob_list),torch.cat(label_list).long(),task='multiclass', num_classes=args.n_classes)
+    f1_micro = multiclass_f1_score(torch.cat(pred_pob_list),torch.cat(label_list).long(),num_classes=args.n_classes, average='micro')
     
     print(correct, total)
     acc = 100.* correct/total
 
     print('val epoch:', epoch, ' val acc: ', acc, 'recall:', recall, "precision:", precision, "f1_macro:",f1, "f1_micro:",f1_micro, "auc:",auc)
     #vis.log('epoch:{epoch},val_acc:{val_acc},val_cm:{val_cm},recall:{recall},precision:{precision},f1:{f1},f1_micro:{f1_micro},aud{auc}'.format(epoch=epoch,val_acc=acc,val_cm=str(con_matx.value()),recall=recall,precision=precision,f1=f1,f1_micro=f1_micro,auc=auc))
-    wandb.log({'epoch': epoch, 'val_acc' : acc, 'val_cm' : str(con_matx.value()) ,'recall' : recall , 'precision' : precision, 'f1' : f1, 'f1_micro' : f1_micro , 'auc' : auc} ,step=epoch)
+    wandb.log({'epoch': epoch, 'val_acc' : acc, 'f1' : f1, 'f1_micro' : f1_micro.item() , 'auc' : auc.item()} ,step=epoch)
 
     if auc >= best_auc:
         print('Saving..')
