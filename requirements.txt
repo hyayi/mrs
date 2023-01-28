@@ -1,0 +1,13 @@
+pandas
+scikit-learn
+pytorch-lightning
+monai
+torchio
+numpy
+torchmetrics
+einops
+SimpleITK
+deepspeed
+wandb
+visdom
+torchnet
