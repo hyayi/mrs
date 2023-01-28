@@ -13,3 +13,4 @@ visdom
 torchnet
 imageio
 scikit-image
+thop
