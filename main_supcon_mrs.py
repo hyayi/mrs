@@ -128,8 +128,8 @@ def main():
     val_data = MRSupcon(data_df=val_df, data_dir=args.data_dir,transforms=val_transfomrs, mode='val')
 
     ## loaer 설정 
-    train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, num_workers=0,pin_memory=True)
-    val_loader = DataLoader(val_data, batch_size=1, shuffle=False, num_workers=0,pin_memory=True)
+    train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, num_workers=4,pin_memory=True)
+    val_loader = DataLoader(val_data, batch_size=1, shuffle=False, num_workers=4,pin_memory=True)
 
     ##loss 및 optimizer  설정 
     criterion = SupConLoss(temperature=0.1)
