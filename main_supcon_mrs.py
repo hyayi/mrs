@@ -50,6 +50,7 @@ parser.add_argument("--spatial_size",nargs='+',type=int, default=[48,256,256])
 parser.add_argument("--pixdim",nargs='+',type=int,default=[1,1,5])
 parser.add_argument("--axcodes",type=str,default='SPL')
 parser.add_argument('--project_name', '-project', default='mrs_scop', help='project_name')
+parser.add_argument('--save_dir', '-save', default='D:/study_d/project/brain/code/save', help='save_dir')
 
 
 ## checpoint 할려고 global변수로 best_f1을 선억했고
@@ -141,7 +142,7 @@ def main():
     con_matx = meter.ConfusionMeter(args.n_classes)
 
     ## 저장 장소 
-    save_dir = './checkpoints/con/'+ str(args.visname)
+    save_dir = f'{args.save_dir}/checkpoints/con/'+ str(args.visname)
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)  
 
