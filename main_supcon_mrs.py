@@ -46,6 +46,9 @@ parser.add_argument('--data_dir', '-data', default='D:/study_d/project/brain/cod
 parser.add_argument('--train_data_path', '-train', default='D:/study_d/project/brain/code/data/annotation/train.csv', help='train_data_path')
 parser.add_argument('--val_data_path', '-val', default='D:/study_d/project/brain/code/data/annotation/val.csv', help='val_data_path')
 parser.add_argument('--test_data_path', '-test', default='D:/study_d/project/brain/code/data/annotation/test.csv', help='test_data_path')
+parser.add_argument("--spatial_size",nargs='+',type=int, default=[48,256,256])
+parser.add_argument("--pixdim",nargs='+',type=int,default=[1,1,5])
+parser.add_argument("--axcodes",type=str,default='SPL')
 parser.add_argument('--project_name', '-project', default='mrs_scop', help='project_name')
 
 
@@ -98,7 +101,7 @@ def main():
     global save_dir
     
     train_df,val_df,test_df = load_data(args.train_data_path,args.val_data_path,args.test_data_path) ## 데이터 로드
-    train_transforms, val_transfomrs = get_trasforms(pixdim = (1,1,5),axcodes='SPL',spatial_size=(48,96,96))
+    train_transforms, val_transfomrs = get_trasforms(pixdim = tuple(args.pixdim),axcodes=args.axcodes,spatial_size=tuple(args.spatial_size))
 
     # vis = Visualizer(args.visname,port=9000) ## 시각화 툴
     # prepare the model
