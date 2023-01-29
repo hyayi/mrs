@@ -31,12 +31,12 @@ datamodule :
   dataset :
     name : 'MRSMultiDataset'
     params : 
-      data_dir : "D:/study_d/project/brain/code/data/image"
+      data_dir : "/home/lab/inseo/brain/data/total2"
   
   data_load_params :
-    train_path : "D:/study_d/project/brain/code/data/annotation/train.csv"
-    val_path : "D:/study_d/project/brain/code/data/annotation/val.csv"
-    test_path : "D:/study_d/project/brain/code/data/annotation/test.csv"
+    train_path : "/home/lab/inseo/brain/data/total2/train.csv"
+    val_path : "/home/lab/inseo/brain/data/total2/val.csv"
+    test_path : "/home/lab/inseo/brain/data/total2/test.csv"
     scaler_name : 'RobustScaler'
     categorical_cols : ['sex']
     numerical_cols : ['age','bmi','ini_nih','pre_mrs','hx_str','hx_htn','hx_smoke','hx_af','tx_throm']
