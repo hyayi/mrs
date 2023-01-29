@@ -37,7 +37,7 @@ def train(args):
     class_weights = data_dm.class_weights
     model = getattr(lighthining_model, config['lighthining_model']['name'])(model_config=config['lighthining_model'],class_weights=class_weights)
     
-    checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath=f"{args.save_path}/", save_top_k=1, monitor="mean_f1_auc",filename=f'{args.model_name}'+'-{epoch:02d}-{val_f1:.3f}-{val_auc:.3f}',mode='max')
+    checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath=f"{args.save_path}/", save_top_k=1, monitor="val_auc",filename=f'{args.model_name}'+'-{epoch:02d}-{val_auc:.3f}',mode='max')
     callbacks = [checkpoint_callback]
     wandb_logger = WandbLogger(project="BrainMrs", name=args.model_name, save_dir=f"{args.save_path}")
     trainer = pl.Trainer(accelerator=args.accelerator, devices=args.devices,callbacks=callbacks,strategy=args.strategy,logger=wandb_logger,**config['trainer'])
@@ -52,8 +52,8 @@ if __name__=="__main__" :
     print('start')
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--config_path", type=str, default='config/res18plusolnyimg.yaml')
-    parser.add_argument("--model_name", type=str, default='res18plusolnyimg')
+    parser.add_argument("--config_path", type=str, default='config/mc3_18_multi.yaml')
+    parser.add_argument("--model_name", type=str, default='mc3_18_multi')
     parser.add_argument("--accelerator", type=str, default= 'gpu')
     parser.add_argument("--save_path", type=str, default= './')
     parser.add_argument("--devices", type=int, default= 1)

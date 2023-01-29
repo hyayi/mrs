@@ -4,11 +4,11 @@ import torch.nn.functional as F
 import torch
 from torchmetrics.functional.classification import multiclass_f1_score
 from torchmetrics.functional import auroc
-import models.model
+import models
 import optimizers
 import schedulers
 
-class MRSClassficationImgOnly(pl.LightningModule):
+class MRSClassficationMultiModal(pl.LightningModule):
 
     def __init__(self,model_config, class_weights):
         super().__init__()
@@ -23,17 +23,15 @@ class MRSClassficationImgOnly(pl.LightningModule):
         print("class weights : ",self.class_weights)
         
         self.num_classes = self.config['model']['params']['num_classes']
-        self.model = getattr(models.model,self.config['model']['name'])(**self.config['model']['params'])
-        
-        
+        self.model = getattr(models,self.config['model']['name'])(**self.config['model']['params'])
         self.clsloss = nn.CrossEntropyLoss(weight=self.class_weights)
 
-    def forward(self, x):
-        return self.model(x)
+    def forward(self, img, clinical):
+        return self.model(img, clinical)
 
     def training_step(self, batch, batch_idx):
-        img, label = batch
-        pred = self(img)
+        img, clinical, label = batch
+        pred = self(img, clinical)
         
         loss = self.clsloss(pred, label)
 
@@ -51,15 +49,17 @@ class MRSClassficationImgOnly(pl.LightningModule):
        labels = torch.cat([x['label'].view(-1) for x in outputs]).view(-1)
        
        auc = auroc(preds, labels, task='multiclass', num_classes=self.num_classes)
-       f1_macro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='micro')
+       f1_micro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='micro')
+       f1_macro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='macro')
        
        self.log("train_auc", auc,prog_bar=False, logger=True)
-       self.log("train_f1", f1_macro,prog_bar=False, logger=True)
+       self.log("train_f1_micro", f1_micro,prog_bar=False, logger=True)
+       self.log("train_f1_macro", f1_macro,prog_bar=False, logger=True)
 
     def validation_step(self, batch, batch_idx):
         
-        img, label = batch
-        pred = self(img)
+        img, clinical, label = batch
+        pred = self(img, clinical)
         
         loss = self.clsloss(pred, label)
 
@@ -77,11 +77,12 @@ class MRSClassficationImgOnly(pl.LightningModule):
         labels = torch.cat([x['label'].view(-1) for x in outputs]).view(-1)
 
         auc = auroc(preds, labels, task='multiclass', num_classes=self.num_classes)
-        f1_macro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='micro')
+        f1_micro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='micro')
+        f1_macro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='macro')
         
         self.log("val_auc", auc, prog_bar=True, logger=True,on_epoch=True)
-        self.log("val_f1", f1_macro,prog_bar=True, logger=True)
-        self.log("mean_f1_auc", (auc+f1_macro)/2, prog_bar=True, logger=True,on_epoch=True)
+        self.log("val_f1_micro", f1_micro,prog_bar=True, logger=True)
+        self.log("val_f1_macro", f1_macro,prog_bar=True, logger=True)
         
         
     def configure_optimizers(self):
