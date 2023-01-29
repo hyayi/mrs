@@ -1,0 +1,111 @@
+lighthining_model :
+  name : "MRSClassficationMultiModal"
+  parmas :
+
+  model :
+    name : "nnUnetMultiModalProbConcat"
+    params :
+      num_classes : 2
+      clinical_feature_len : 11
+      head : mlp 
+      plans_path : '/home/lab/inseo/brain/model_best.model.pkl'
+      weight : '/home/lab/inseo/brain/model_best.model'
+      
+  optimizer :
+    name : "AdamW"
+    params : 
+      lr : 0.0001
+      weight_decay : 0.0005
+  
+  scheduler :
+    name : "CosineAnnealingWarmUpRestarts"
+    params : 
+      T_0 : 50
+      T_mult : 1
+      eta_max : 0.001
+      T_up : 10
+      gamma : 0.5
+
+datamodule :
+  name : "BrainDataModule"
+  params : 
+
+  dataset :
+    name : 'MRSMultiDataset'
+    params : 
+      data_dir : "/home/lab/inseo/brain/data/total2"
+  
+  data_load_params :
+    train_path : "/home/lab/inseo/brain/data/total2/train.csv"
+    val_path : "/home/lab/inseo/brain/data/total2/val.csv"
+    test_path : "/home/lab/inseo/brain/data/total2/test.csv"
+    scaler_name : 'RobustScaler'
+    categorical_cols : ['sex']
+    numerical_cols : ['age','bmi','ini_nih','pre_mrs','hx_str','hx_htn','hx_smoke','hx_af','tx_throm']
+    ignore_cols : ['image','label','mask_path'] 
+
+
+  dataloader : 
+    name :
+    params :
+      batch_size : 8
+      num_workers : 7
+      pin_memory : False
+
+  transforms:
+    train:
+      LoadImaged : 
+        keys : "img"
+      AddChanneld :
+        keys : "img"
+
+      Spacingd : 
+        keys : "img"
+        pixdim : [1,1,5]
+
+      Orientationd :
+        keys : "img"
+        axcodes : 'SPL'
+
+      ScaleIntensityd :
+        keys : "img"
+
+      Resized :
+        keys : "img"
+        spatial_size : [48,256,256]
+
+      RandRotated : 
+        keys : "img"
+        range_x : 0.2617993877991494
+
+      EnsureTyped :
+        keys : "img"
+
+    val:
+      LoadImaged : 
+        keys : "img"
+
+      AddChanneld :
+        keys : "img"
+
+      Spacingd : 
+        keys : "img"
+        pixdim : [1,1,5]
+
+      Orientationd :
+        keys : "img"
+        axcodes : 'SPL'
+
+      ScaleIntensityd :
+        keys : "img"
+
+      Resized :
+        keys : "img"
+        spatial_size :  [48,256,256]
+      EnsureTyped :
+        keys : "img"
+
+trainer :
+  precision : 16
+  max_epochs : 100
+  gradient_clip_val : 10
