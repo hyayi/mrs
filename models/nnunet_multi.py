@@ -83,7 +83,7 @@ class nnUnetMultiModalFeatureConcat(nn.Module):
         return x
     
 
-class nnUneMultiModalProbConcat(nn.Module):
+class nnUnetMultiModalProbConcat(nn.Module):
     def __init__(self, clinical_feature_len,plans_path,head='linear', num_classes=2,weight=None) -> None:
         super().__init__()
         
@@ -108,7 +108,7 @@ class nnUneMultiModalProbConcat(nn.Module):
         return x
     
 
-class nnUneMultiModalEnsenble(nn.Module):
+class nnUnetMultiModalEnsenble(nn.Module):
     def __init__(self, clinical_feature_len,plans_path,head='linear', num_classes=2,weight=None) -> None:
         super().__init__()
         
