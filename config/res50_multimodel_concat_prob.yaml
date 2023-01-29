@@ -1,0 +1,55 @@
+lighthining_model :
+  name : "MRS2DClassficationMultiModal"
+  parmas :
+
+  model :
+    name : "Resnet50MultiModalProbConcat"
+    params :
+      num_classes : 2
+      clinical_feature_len : 11
+      head : mlp 
+      
+  optimizer :
+    name : "AdamW"
+    params : 
+      lr : 0.0001
+      weight_decay : 0.0005
+  
+  scheduler :
+    name : "CosineAnnealingWarmUpRestarts"
+    params : 
+      T_0 : 50
+      T_mult : 1
+      eta_max : 0.001
+      T_up : 10
+      gamma : 0.5
+
+datamodule :
+  name : "BrainDataModule"
+  params : 
+
+  dataset :
+    name : 'MRSDataset2DMultiModal'
+    params : 
+      data_dir : "/home/lab/inseo/brain/data/total2"
+  
+  data_load_params :
+    train_path : "/home/lab/inseo/brain/data/total2/train.csv"
+    val_path : "/home/lab/inseo/brain/data/total2/val.csv"
+    test_path : "/home/lab/inseo/brain/data/total2/test.csv"
+    scaler_name : 'RobustScaler'
+    categorical_cols : ['sex']
+    numerical_cols : ['age','bmi','ini_nih','pre_mrs','hx_str','hx_htn','hx_smoke','hx_af','tx_throm']
+    ignore_cols : ['image','label','mask_path'] 
+
+  dataloader : 
+    name :
+    params :
+      batch_size : 32
+      num_workers : 0
+      pin_memory : False
+
+trainer :
+  precision : 16
+  max_epochs : 100
+  gradient_clip_val : 10

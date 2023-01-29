@@ -1,72 +1,70 @@
 import pytorch_lightning as pl
 import torch.nn as nn
+import torch.nn.functional as F
 import torch
 from torchmetrics.functional.classification import multiclass_f1_score
 from torchmetrics.functional import auroc
-from scheduler import CosineAnnealingWarmUpRestarts
-import torch
-import torch.nn as nn
-import torchvision.models as models
+import models
+import optimizers
+import schedulers
 
-class MRSClassfication2D(pl.LightningModule):
+class MRS2DClassficationMultiModal(pl.LightningModule):
 
     def __init__(self,model_config, class_weights):
         super().__init__()
         self.save_hyperparameters()
+        self.config = model_config
+        
         if class_weights is not None:
             self.class_weights =torch.as_tensor(class_weights,dtype=torch.float)
         else :
             self.class_weights =class_weights
+            
         print("class weights : ",self.class_weights)
         
-        self.config = model_config
-        self.num_classes = self.config['model_params']['cls_num_classes']
-        self.model = self.create_model(self.config['model_name'],self.num_classes)
-        self.loss = nn.CrossEntropyLoss(weight=self.class_weights)
-        self.num_classes = self.config['model_params']['cls_num_classes']
+        self.num_classes = self.config['model']['params']['num_classes']
+        self.model = getattr(models,self.config['model']['name'])(**self.config['model']['params'])
+        self.clsloss = nn.CrossEntropyLoss(weight=self.class_weights)
 
-    def create_model(self,model_name, num_classes):
-        model = getattr(models ,model_name)(weights ='DEFAULT')
-        input_features = model.fc.in_features
-        model.fc = nn.Linear(input_features, num_classes)
-        return model
-    
-    def forward(self, x):
-        return self.model(x)
+    def forward(self, img, clinical):
+        return self.model(img, clinical)
 
     def training_step(self, batch, batch_idx):
+        img, clinical, label = batch
+        pred = self(img, clinical)
         
-        x, y = batch
-        pred = self(x)
-        loss = self.loss (pred, y)
-        
+        loss = self.clsloss(pred, label)
+
         self.log("train_loss", loss, on_epoch=True, prog_bar=True, logger=True)
-        
-        output = {'loss':loss,'pred':pred,'label':y}
+        output = {'loss':loss,'pred':pred,'label':label}
         
         return output
     
-    def training_epoch_end(self, outputs):
+    def training_epoch_end(self, outputs): 
+        
        if self.trainer.num_devices > 1:
            outputs = self.all_gather(outputs)
-       
+        
        preds = torch.cat([x['pred'].view(-1,self.num_classes) for x in outputs])
        labels = torch.cat([x['label'].view(-1) for x in outputs]).view(-1)
-       auc = auroc(preds, labels, task='multiclass', num_classes=self.num_classes)
-       f1_macro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='micro')
        
-       self.log("train_auc", auc,prog_bar=True, logger=True)
-       self.log("train_f1", f1_macro,prog_bar=True, logger=True)
+       auc = auroc(preds, labels, task='multiclass', num_classes=self.num_classes)
+       f1_micro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='micro')
+       f1_macro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='macro')
+       
+       self.log("train_auc", auc,prog_bar=False, logger=True)
+       self.log("train_f1_micro", f1_micro,prog_bar=False, logger=True)
+       self.log("train_f1_macro", f1_macro,prog_bar=False, logger=True)
 
     def validation_step(self, batch, batch_idx):
         
-        x, y = batch
-        pred = self(x)
-        loss = self.loss (pred, y)
+        img, clinical, label = batch
+        pred = self(img, clinical)
         
+        loss = self.clsloss(pred, label)
+
         self.log("val_loss", loss, on_epoch=True, prog_bar=True, logger=True)
-        
-        output = {'loss':loss,'pred':pred,'label':y}
+        output = {'loss':loss,'pred':pred,'label':label}
 
         return output
 
@@ -79,22 +77,16 @@ class MRSClassfication2D(pl.LightningModule):
         labels = torch.cat([x['label'].view(-1) for x in outputs]).view(-1)
 
         auc = auroc(preds, labels, task='multiclass', num_classes=self.num_classes)
-        f1_macro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='micro')
+        f1_micro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='micro')
+        f1_macro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='macro')
         
         self.log("val_auc", auc, prog_bar=True, logger=True,on_epoch=True)
-        self.log("val_f1", f1_macro,prog_bar=True, logger=True)
-        self.log("mean_f1_auc", (auc+f1_macro)/2, prog_bar=True, logger=True,on_epoch=True)
+        self.log("val_f1_micro", f1_micro,prog_bar=True, logger=True)
+        self.log("val_f1_macro", f1_macro,prog_bar=True, logger=True)
         
         
     def configure_optimizers(self):
-        optimizer = torch.optim.AdamW(self.parameters(),
-                                      lr=self.config['learning_rate'], weight_decay=self.config['weight_decay'])
+        optimizer = getattr(optimizers,self.config['optimizer']['name'])(self.parameters(), **self.config['optimizer']['params'])
+        scheduler = getattr(schedulers,self.config['scheduler']['name'])(optimizer,**self.config['scheduler']['params'])
         
-        scheduler = CosineAnnealingWarmUpRestarts(optimizer, 
-                                                  T_0=self.config['T_0'], 
-                                                  T_mult=self.config['T_mult'], 
-                                                  eta_max=self.config['eta_max'],
-                                                  T_up=self.config['T_up'],
-                                                  gamma=self.config['gamma'])
         return [optimizer],[scheduler]
-

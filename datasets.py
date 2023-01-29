@@ -4,15 +4,19 @@ import nibabel as nib
 from utils import return_top_k_slice
 import cv2
 
-class MRSDataset2D(torch.utils.data.Dataset):
-    def __init__(self, data_df,data_dir, transforms):
+class MRSDataset2DMultiModal(torch.utils.data.Dataset):
+    def __init__(self, data_df, data_dir, transforms):
         self.data_df = data_df
         self.transforms = transforms
         self.data_dir = data_dir
          
     def __len__(self):
         return len(self.data_df)
-
+    
+    def prerpocessing(self,df):
+        clinical_data_feature = df.iloc[:,3:].values
+        return torch.as_tensor(clinical_data_feature, dtype =torch.float)
+    
     def __getitem__(self, index):
         
         label = torch.as_tensor(self.data_df['label'][index])
@@ -36,6 +40,6 @@ class MRSDataset2D(torch.utils.data.Dataset):
         
         if self.transforms:
             img = self.transforms(image=img)['image']
+        clinical_data = self.prerpocessing(self.data_df)[index]
         
-        return img, label
-
+        return img, clinical_data, label

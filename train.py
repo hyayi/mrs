@@ -2,9 +2,8 @@ import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 import pytorch_lightning as pl
-
-import lightning_model 
-from datamodule import BrainDataModule
+import lightning_model
+import  datamodule 
 import argparse
 import yaml
 import torch
@@ -33,15 +32,13 @@ seed_everything(42)
 def train(args):
     with open(args.config_path) as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
-        
-    data_dm = BrainDataModule(data_config=config['datamodule'])
+
+    data_dm = getattr(datamodule, config['datamodule']['name'])(data_config=config['datamodule'])
     class_weights = data_dm.class_weights
-
-    model = getattr(lightning_model, config['lighthining_model']['name'])(model_config=config['lighthining_model']['parmas'],class_weights=class_weights)
+    model = getattr(lightning_model, config['lighthining_model']['name'])(model_config=config['lighthining_model'],class_weights=class_weights)
     
-    checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath=f"{args.save_path}/", save_top_k=1, monitor="mean_f1_auc",filename=f'{args.model_name}'+'-{epoch:02d}-{val_f1:.3f}-{val_auc:.3f}',mode='max')
+    checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath=f"{args.save_path}/", save_top_k=1, monitor="val_auc",filename=f'{args.model_name}'+'-{epoch:02d}-{val_auc:.3f}',mode='max')
     callbacks = [checkpoint_callback]
-
     wandb_logger = WandbLogger(project="BrainMrs", name=args.model_name, save_dir=f"{args.save_path}")
     trainer = pl.Trainer(accelerator=args.accelerator, devices=args.devices,callbacks=callbacks,strategy=args.strategy,logger=wandb_logger,**config['trainer'])
     
@@ -55,8 +52,8 @@ if __name__=="__main__" :
     print('start')
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--config_path", type=str, default='D:/study_d/project/brain/code/2DCNN_Mask/config/experiment1.yaml')
-    parser.add_argument("--model_name", type=str, default='experiment1_local')
+    parser.add_argument("--config_path", type=str, default='config\experiment2.yaml')
+    parser.add_argument("--model_name", type=str, default='test')
     parser.add_argument("--accelerator", type=str, default= 'gpu')
     parser.add_argument("--save_path", type=str, default= './')
     parser.add_argument("--devices", type=int, default= 1)
