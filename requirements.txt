@@ -1,0 +1,11 @@
+pandas
+scikit-learn
+pytorch-lightning
+torchio
+numpy
+torchmetrics
+einops
+nibabel
+wandb
+albumentations
+torchvision==0.14
