@@ -1,0 +1,3 @@
+num_classes : 2
+plans_path : '/home/lab/inseo/brain/model_best.model.pkl'
+weight : '/home/lab/inseo/brain/model_best.model'

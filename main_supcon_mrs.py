@@ -27,6 +27,7 @@ from mrs_transform import get_trasforms
 from torchmetrics.functional.classification import multiclass_f1_score
 from torchmetrics.functional import auroc
 import wandb
+import yaml
 
 ## torch version 출력
 print("torch = {}".format(torch.__version__))  
@@ -46,12 +47,13 @@ parser.add_argument('--data_dir', '-data', default='D:/study_d/project/brain/cod
 parser.add_argument('--train_data_path', '-train', default='D:/study_d/project/brain/code/data/annotation/train.csv', help='train_data_path')
 parser.add_argument('--val_data_path', '-val', default='D:/study_d/project/brain/code/data/annotation/val.csv', help='val_data_path')
 parser.add_argument('--test_data_path', '-test', default='D:/study_d/project/brain/code/data/annotation/test.csv', help='test_data_path')
-parser.add_argument("--spatial_size",nargs='+',type=int, default=[48,256,256])
+parser.add_argument("--spatial_size",nargs='+',type=int, default=[48,64,64])
 parser.add_argument("--pixdim",nargs='+',type=int,default=[1,1,5])
 parser.add_argument("--axcodes",type=str,default='SPL')
 parser.add_argument('--project_name', '-project', default='mrs_scop', help='project_name')
 parser.add_argument('--save_dir', '-save', default='D:/study_d/project/brain/code/save', help='save_dir')
-
+parser.add_argument('--model_config', '-config', default='D:/study_d/project/brain/code/supcon_mrs/config.yaml', help='save_dir')
+parser.add_argument('--num_workers', default=4, type=int,help='num_workers')
 
 ## checpoint 할려고 global변수로 best_f1을 선억했고
 best_auc = 0
@@ -103,10 +105,14 @@ def main():
     
     train_df,val_df,test_df = load_data(args.train_data_path,args.val_data_path,args.test_data_path) ## 데이터 로드
     train_transforms, val_transfomrs = get_trasforms(pixdim = tuple(args.pixdim),axcodes=args.axcodes,spatial_size=tuple(args.spatial_size))
-
+    
+    with open(args.model_config) as f:
+        model_config = yaml.load(f, Loader=yaml.FullLoader)
+        
     # vis = Visualizer(args.visname,port=9000) ## 시각화 툴
     # prepare the model
-    target_model = SupConResNet(name='resnest50_3D', head='mlp', feat_dim=128, n_classes=args.n_classes) ## 모델 선언
+    
+    target_model = SupConResNet(name='nnUnet', head='mlp', feat_dim=128, **model_config) ## 모델 선언
 
     s1 = target_model.sigma1   ## adaptive joint training strategy에 사용하는 sigma1, sigma2
     s2 = target_model.sigma2
@@ -128,8 +134,8 @@ def main():
     val_data = MRSupcon(data_df=val_df, data_dir=args.data_dir,transforms=val_transfomrs, mode='val')
 
     ## loaer 설정 
-    train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, num_workers=4,pin_memory=True)
-    val_loader = DataLoader(val_data, batch_size=1, shuffle=False, num_workers=4,pin_memory=True)
+    train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, num_workers=args.num_workers,pin_memory=True)
+    val_loader = DataLoader(val_data, batch_size=1, shuffle=False, num_workers=args.num_workers,pin_memory=True)
 
     ##loss 및 optimizer  설정 
     criterion = SupConLoss(temperature=0.1)
@@ -221,7 +227,6 @@ def main():
         if (epoch + 1) % val_epoch == 0:
             val1(target_model,val_loader,epoch)
             print(torch.exp(-s1).item(),torch.exp(-s2).item())
-         
 
 @torch.no_grad()
 def val1(net, val_loader, epoch):

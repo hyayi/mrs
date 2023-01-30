@@ -21,6 +21,7 @@ from models import resnet1
 
 from models.resnet3D import resnet50 #medical
 from models.resnest import resnest50_3D
+from models.nnUnet import nnUnetBackbone
 
 
 __all__ = ['AP3DResNet50', 'AP3DNLResNet50']
@@ -211,17 +212,18 @@ model_dict = {
     # 'resnet18': [resnet18, 512],
     'c2dresnet50': [C2DResNet50, 2048],
     'medicalnet': [resnet50, 2048],
-    'resnest50_3D': [resnest50_3D, 2048]
+    'resnest50_3D': [resnest50_3D, 2048],
+    'nnUnet' : [nnUnetBackbone, 320],
 }
 
 class SupConResNet(nn.Module):
     """backbone + projection head"""
-    def __init__(self, name='c2dresnet50', head='mlp', feat_dim=128, n_classes=2):
+    def __init__(self, name='c2dresnet50', head='mlp', feat_dim=128, **kwargs):
         super(SupConResNet, self).__init__()
         model_fun, dim_in = model_dict[name]
         self.sigma1 = nn.Parameter(torch.ones(1))
         self.sigma2 = nn.Parameter(torch.ones(1))
-        self.encoder = model_fun(num_classes=n_classes)
+        self.encoder = model_fun(**kwargs)
         if head == 'linear':
             self.head = nn.Linear(dim_in, feat_dim)
         elif head == 'mlp':
