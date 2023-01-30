@@ -32,4 +32,4 @@ class BrainDataModule(pl.LightningDataModule):
         return DataLoader(self.val_ds,batch_size=self.config['dataloader']['params']['batch_size'],num_workers=self.config['dataloader']['params']['num_workers'], pin_memory=self.config['dataloader']['params']['pin_memory'],shuffle=False)
 
     def test_dataloader(self):
-        return DataLoader(self.test_ds, batch_size=self.config['batch_size'],num_workers=self.config['num_workers'], pin_memory=self.config['pin_memory'])
+        return DataLoader(self.test_ds, batch_size=self.config['dataloader']['params']['batch_size'],num_workers=self.config['dataloader']['params']['num_workers'], pin_memory=self.config['dataloader']['params']['pin_memory'])
