@@ -243,6 +243,37 @@ class SupConResNet(nn.Module):
         return feat,x 
 
 
+class SupConResNetMulti(nn.Module):
+    """backbone + projection head"""
+    def __init__(self, name='c2dresnet50', head='mlp', feat_dim=128,clinical_len=11, **kwargs):
+        super(SupConResNetMulti, self).__init__()
+        model_fun, dim_in = model_dict[name]
+        self.sigma1 = nn.Parameter(torch.ones(1))
+        self.sigma2 = nn.Parameter(torch.ones(1))
+        self.encoder = model_fun(**kwargs)
+        self.fc = nn.Sequential(nn.Linear(clinical_len + dim_in , int((clinical_len + dim_in)/2)),
+                                nn.ReLU(inplace=True),
+                                nn.Linear(int((clinical_len + dim_in)/2),kwargs['num_classes']))
+        
+        if head == 'linear':
+            self.head = nn.Linear(dim_in, feat_dim)
+        elif head == 'mlp':
+            self.head = nn.Sequential(
+                nn.Linear(clinical_len + dim_in, clinical_len + dim_in),
+                nn.ReLU(inplace=True),
+                nn.Linear(clinical_len + dim_in, feat_dim)
+            )
+        else:
+            raise NotImplementedError(
+                'head not supported: {}'.format(head))
+
+    def forward(self, img, clinical):
+        feat, _ = self.encoder(img)
+        feat = torch.concat([feat, clinical], dim=1)
+        out = self.fc(feat)
+        feat = F.normalize(self.head(feat), dim=1)
+        
+        return feat,out
 
 if __name__ == '__main__':
     net = AP3DResNet50(5)

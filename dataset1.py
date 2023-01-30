@@ -122,6 +122,38 @@ class MRSupcon(Data.Dataset):
     def __len__(self):
         return len(self.data_df)
 
+class MRSupconMulti(Data.Dataset):
+    def __init__(self, data_df, data_dir,transforms, mode='train'):
+        self.data_df = data_df
+        self.transforms = transforms
+        self.data_dir = data_dir
+        self.mode = mode
+        
+    def prerpocessing(self,df):
+        clinical_data_feature = df.iloc[:,3:].values
+        return torch.as_tensor(clinical_data_feature, dtype =torch.float)
+    
+    def __len__(self):
+        return len(self.data_df)
+
+    def __getitem__(self, index):
+        label = torch.as_tensor(self.data_df['label'][index])
+        ID = self.data_df['image'][index]
+        image_path = f"{self.data_dir}/{self.data_df['image'][index]}.nii.gz"
+        image_dict =  {'img' : image_path}
+        clinical_data = self.prerpocessing(self.data_df)[index]
+        
+        if self.mode == 'train':
+            img1 = self.transforms(image_dict)['img']
+            img2 = self.transforms(image_dict)['img'] 
+            return [img1,img2], [clinical_data,clinical_data], label, ID
+        
+        elif self.mode == 'val':
+            img = self.transforms(image_dict)['img']
+            return img, label, clinical_data, ID
+    
+    def __len__(self):
+        return len(self.data_df)
 
 class Lung3D_ccii_patient_clf(Data.Dataset):
     def __init__(self, train=False, val=False, inference=False, n_classes = 2):
