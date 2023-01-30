@@ -150,7 +150,7 @@ class MRSupconMulti(Data.Dataset):
         
         elif self.mode == 'val':
             img = self.transforms(image_dict)['img']
-            return img, label, clinical_data, ID
+            return img, clinical_data, label, ID
     
     def __len__(self):
         return len(self.data_df)

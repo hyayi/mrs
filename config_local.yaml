@@ -1,0 +1,2 @@
+num_classes : 2
+plans_path : "D:/study_d/project/brain/code/3DnnUnet/model_best.model.pkl"
