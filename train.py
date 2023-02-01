@@ -52,8 +52,8 @@ if __name__=="__main__" :
     print('start')
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--config_path", type=str, default='config/mc3_18_multi.yaml')
-    parser.add_argument("--model_name", type=str, default='mc3_18_multi')
+    parser.add_argument("--config_path", type=str, default='config/vit_multi_prob_concat_test.yaml')
+    parser.add_argument("--model_name", type=str, default='vit_test')
     parser.add_argument("--accelerator", type=str, default= 'gpu')
     parser.add_argument("--save_path", type=str, default= './')
     parser.add_argument("--devices", type=int, default= 1)
