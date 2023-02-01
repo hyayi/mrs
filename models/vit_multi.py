@@ -10,13 +10,13 @@ class VitMultiModalFeatureConcat(nn.Module):
         self.backbone = ViT(in_channels=1, img_size=img_size,patch_size=patch_size, pos_embed='conv')
         
         if head == 'linear':
-            self.head = nn.Linear(512+clinical_feature_len, num_classes)
+            self.head = nn.Linear(768+clinical_feature_len, num_classes)
     
         elif head == 'mlp':
             self.head = nn.Sequential(
-                nn.Linear(512+clinical_feature_len, int((512+clinical_feature_len)/2)),
+                nn.Linear(768+clinical_feature_len, int((768+clinical_feature_len)/2)),
                 nn.ReLU(inplace=True),
-                nn.Linear(int((512+clinical_feature_len)/2), num_classes)
+                nn.Linear(int((768+clinical_feature_len)/2), num_classes)
             )
     
     def forward(self, img, clinical):
