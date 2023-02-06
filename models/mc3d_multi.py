@@ -75,3 +75,40 @@ class Mc3D18MultiModalEnsenble(nn.Module):
         clinical = self.head(clinical)
         out = (img + clinical)/2
         return out
+
+class Mc3D18MultiModalPaper(nn.Module):
+    def __init__(self, clinical_feature_len, num_classes=2) -> None:
+        super().__init__()
+        
+        self.backbone = nn.Sequential(*list(torchvision.models.video.mc3_18(pretrained=True).children())[:-1])
+        self.backbone[0][0] = nn.Conv3d(1, 64, kernel_size=(3, 7, 7), stride=(1, 2, 2), padding=(1, 3, 3), bias=False)
+        
+        self.fc1 = nn.Sequential(nn.Linear(512, 256), 
+                                 nn.ReLU(inplace=True),
+                                 nn.Dropout(0.2),
+                                 nn.Linear(256, 128),
+                                 nn.ReLU(inplace=True))
+        
+        self.fc2 = nn.Sequential(
+                            nn.Linear(clinical_feature_len, 11), 
+                            nn.ReLU(inplace=True),
+                            nn.Linear(11,10), 
+                            nn.ReLU(inplace=True),
+                            nn.Dropout(0.2),
+                            nn.Linear(10, 10),
+                            nn.ReLU(inplace=True))
+
+
+        self.head =  nn.Sequential(
+                            nn.Linear(138,60), 
+                            nn.ReLU(inplace=True),
+                            nn.Dropout(0.2),
+                            nn.Linear(60, num_classes))
+        
+    
+    def forward(self, img, clinical):
+        img = self.backbone(img)
+        img = img.flatten(start_dim=1)
+        clinical =  self.fc2(clinical)
+        out = self.head(torch.cat([img, clinical], dim=1))
+        return out
