@@ -3,11 +3,10 @@ lighthining_model :
   parmas :
 
   model :
-    name : "VitMultiModalProbConcat"
+    name : "VitMultiModalPaper"
     params :
       num_classes : 2
       clinical_feature_len : 11
-      head : mlp 
       img_size : [64,64,32]
       patch_size : [16,16,8]
 
@@ -50,8 +49,8 @@ datamodule :
   dataloader : 
     name :
     params :
-      batch_size : 4
-      num_workers : 0
+      batch_size : 8
+      num_workers : 7
       pin_memory : False
 
   transforms:
@@ -63,7 +62,7 @@ datamodule :
 
       Spacingd : 
         keys : "img"
-        pixdim : [1,1,2]
+        pixdim : [1,1,5]
 
       Orientationd :
         keys : "img"
@@ -74,7 +73,7 @@ datamodule :
 
       Resized :
         keys : "img"
-        spatial_size : [64,64,32]
+        spatial_size : [256,256,48]
 
       RandRotated : 
         keys : "img"
@@ -92,7 +91,7 @@ datamodule :
 
       Spacingd : 
         keys : "img"
-        pixdim : [1,1,2]
+        pixdim : [1,1,5]
 
       Orientationd :
         keys : "img"
@@ -103,10 +102,11 @@ datamodule :
 
       Resized :
         keys : "img"
-        spatial_size : [64,64,32]
+        spatial_size : [256,256,48]
       EnsureTyped :
         keys : "img"
 
 trainer :
   precision : 16
   max_epochs : 100
+  gradient_clip_val : 10

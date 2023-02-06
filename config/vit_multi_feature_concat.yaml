@@ -59,7 +59,7 @@ datamodule :
 
       Spacingd : 
         keys : "img"
-        pixdim : [1,1,4]
+        pixdim : [1,1,5]
 
       Orientationd :
         keys : "img"
@@ -70,7 +70,7 @@ datamodule :
 
       Resized :
         keys : "img"
-        spatial_size : [256,256,64]
+        spatial_size : [256,256,48]
 
       RandRotated : 
         keys : "img"
@@ -88,7 +88,7 @@ datamodule :
 
       Spacingd : 
         keys : "img"
-        pixdim : [1,1,4]
+        pixdim : [1,1,5]
 
       Orientationd :
         keys : "img"
@@ -99,10 +99,11 @@ datamodule :
 
       Resized :
         keys : "img"
-        spatial_size : [256,256,64]
+        spatial_size : [256,256,48]
       EnsureTyped :
         keys : "img"
 
 trainer :
   precision : 16
   max_epochs : 100
+  gradient_clip_val : 10
