@@ -166,6 +166,7 @@ class nnUnetMultiModalPaper(nn.Module):
     def forward(self, img, clinical):
         img = self.backbone(img)
         img = img.flatten(start_dim=1)
+        img = self.fc1(img)
         clinical =  self.fc2(clinical)
         out = self.head(torch.cat([img, clinical], dim=1))
         return out
