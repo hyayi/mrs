@@ -7,7 +7,7 @@ lighthining_model :
     params :
       num_classes : 2
       clinical_feature_len : 11
-      img_size : [64,64,32]
+      img_size : [256,256,48]
       patch_size : [16,16,8]
 
 
