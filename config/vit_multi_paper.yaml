@@ -34,7 +34,7 @@ datamodule :
   dataset :
     name : 'MRSMultiDataset'
     params : 
-      data_dir : "D:/study_d/project/brain/code/data/image"
+      data_dir : "/home/lab/inseo/brain/data/total2"
   
   data_load_params :
     train_path : "/home/lab/inseo/brain/data/total2/train.csv"
