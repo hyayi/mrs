@@ -8,7 +8,7 @@ import models
 import optimizers
 import schedulers
 
-class MRSClassficationMultiModal(pl.LightningModule):
+class MRSClassficationImgOnly(pl.LightningModule):
 
     def __init__(self,model_config, class_weights):
         super().__init__()
