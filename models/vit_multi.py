@@ -50,31 +50,43 @@ class VitMultiModalProbConcat(nn.Module):
     
 
 class VitMultiModalPaper(nn.Module):
-    def __init__(self, clinical_feature_len, num_classes=2,img_size=(64,256,256), patch_size=(8,32,32) ) -> None:
+    def __init__(self, clinical_feature_len,
+                 hidden_dims_1,
+                 hidden_dims_2,
+                 hidden_dims_3,
+                 drop_out_rate_1,
+                 drop_out_rate_2,
+                 drop_out_rate_3,
+                 num_classes=2,
+                 img_size=(64,256,256), 
+                 patch_size=(8,32,32) ) -> None:
         super().__init__()
         
         self.backbone = ViT(in_channels=1, img_size=img_size,patch_size=patch_size, pos_embed='conv',classification=False)
-        self.fc1 = nn.Sequential(nn.Linear(768, 256), 
+        
+        self.fc1 = nn.Sequential(nn.Linear(768, hidden_dims_1[0]), 
                                  nn.ReLU(inplace=True),
-                                 nn.Dropout(0.2),
-                                 nn.Linear(256, 128),
+                                 nn.Dropout(drop_out_rate_1),
+                                 nn.Linear(hidden_dims_1[0], hidden_dims_1[1]),
                                  nn.ReLU(inplace=True))
         
         self.fc2 = nn.Sequential(
-                            nn.Linear(clinical_feature_len, 11), 
+                            nn.Linear(clinical_feature_len, hidden_dims_2[0]), 
                             nn.ReLU(inplace=True),
-                            nn.Linear(11,10), 
+                            nn.Linear(hidden_dims_2[0],hidden_dims_2[1]), 
                             nn.ReLU(inplace=True),
-                            nn.Dropout(0.2),
-                            nn.Linear(10, 10),
+                            nn.Dropout(drop_out_rate_2),
+                            nn.Linear(hidden_dims_2[1], hidden_dims_2[2]),
                             nn.ReLU(inplace=True))
 
 
         self.head =  nn.Sequential(
-                            nn.Linear(138,60), 
+                            nn.Linear(
+                                hidden_dims_1[1]+hidden_dims_2[2],
+                                hidden_dims_3[0]), 
                             nn.ReLU(inplace=True),
-                            nn.Dropout(0.2),
-                            nn.Linear(60, num_classes))
+                            nn.Dropout(drop_out_rate_3),
+                            nn.Linear(hidden_dims_3[0], num_classes))
         
     
     def forward(self, img, clinical):

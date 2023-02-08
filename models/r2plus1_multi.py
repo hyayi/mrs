@@ -75,33 +75,42 @@ class R2plus1d18MultiModalEnsenble(nn.Module):
         return out
 
 class R2plus1MultiModalPaper(nn.Module):
-    def __init__(self, clinical_feature_len, num_classes=2) -> None:
-        super().__init__()
+    def __init__(self, 
+                 clinical_feature_len,
+                 hidden_dims_1,
+                 hidden_dims_2,
+                 hidden_dims_3,
+                 drop_out_rate_1,
+                 drop_out_rate_2,
+                 drop_out_rate_3,
+                 num_classes=2) -> None:
         
         self.backbone = nn.Sequential(*list(torchvision.models.video.r2plus1d_18(pretrained=True).children())[:-1])
         self.backbone[0][0] = nn.Conv3d(1, 45, kernel_size=(1, 7, 7), stride=(1, 2, 2), padding=(0, 3, 3), bias=False)
         
-        self.fc1 = nn.Sequential(nn.Linear(512, 256), 
+        self.fc1 = nn.Sequential(nn.Linear(512, hidden_dims_1[0]), 
                                  nn.ReLU(inplace=True),
-                                 nn.Dropout(0.2),
-                                 nn.Linear(256, 128),
+                                 nn.Dropout(drop_out_rate_1),
+                                 nn.Linear(hidden_dims_1[0], hidden_dims_1[1]),
                                  nn.ReLU(inplace=True))
         
         self.fc2 = nn.Sequential(
-                            nn.Linear(clinical_feature_len, 11), 
+                            nn.Linear(clinical_feature_len, hidden_dims_2[0]), 
                             nn.ReLU(inplace=True),
-                            nn.Linear(11,10), 
+                            nn.Linear(hidden_dims_2[0],hidden_dims_2[1]), 
                             nn.ReLU(inplace=True),
-                            nn.Dropout(0.2),
-                            nn.Linear(10, 10),
+                            nn.Dropout(drop_out_rate_2),
+                            nn.Linear(hidden_dims_2[1], hidden_dims_2[2]),
                             nn.ReLU(inplace=True))
 
 
         self.head =  nn.Sequential(
-                            nn.Linear(138,60), 
+                            nn.Linear(
+                                hidden_dims_1[1]+hidden_dims_2[2],
+                                hidden_dims_3[0]), 
                             nn.ReLU(inplace=True),
-                            nn.Dropout(0.2),
-                            nn.Linear(60, num_classes))
+                            nn.Dropout(drop_out_rate_3),
+                            nn.Linear(hidden_dims_3[0], num_classes))
         
     
     def forward(self, img, clinical):

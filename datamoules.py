@@ -9,12 +9,12 @@ from utils import data_load
 class BrainDataModule(pl.LightningDataModule):
     
 
-    def __init__(self,data_config):
+    def __init__(self,data_config,fold=None,fold_num=None):
         super().__init__()
         
         self.config =data_config
         self.dataset = getattr(datasets,self.config['dataset']['name'])
-        self.train,self.val, self.test = data_load(**self.config['data_load_params'])
+        self.train,self.val, self.test = data_load(fold=fold,fold_num=fold_num,**self.config['data_load_params'])
         
         self.train_transforms = Compose([getattr(transforms,name)(**params) for name, params in self.config['transforms']['train'].items()])
         self.val_transforms = Compose([getattr(transforms,name)(**params) for name, params in self.config['transforms']['val'].items()])

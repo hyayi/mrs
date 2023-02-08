@@ -42,7 +42,7 @@ class MRSClassficationMultiModal(pl.LightningModule):
     
     def training_epoch_end(self, outputs): 
         
-       if self.trainer.num_devices > 1:
+       if self.trainer.num_nodes > 1:
            outputs = self.all_gather(outputs)
         
        preds = torch.cat([x['pred'].view(-1,self.num_classes) for x in outputs])
@@ -70,7 +70,7 @@ class MRSClassficationMultiModal(pl.LightningModule):
 
     def validation_epoch_end(self, outputs):
         
-        if self.trainer.num_devices > 1:
+        if self.trainer.num_nodes > 1:
             outputs = self.all_gather(outputs)
         
         preds = torch.cat([x['pred'].view(-1,self.num_classes) for x in outputs])
@@ -84,7 +84,30 @@ class MRSClassficationMultiModal(pl.LightningModule):
         self.log("val_f1_micro", f1_micro,prog_bar=True, logger=True)
         self.log("val_f1_macro", f1_macro,prog_bar=True, logger=True)
         
+    def test_step(self, batch, batch_idx):
         
+        img, clinical, label = batch
+        pred = self(img, clinical)
+        output = {'pred':pred,'label':label}
+
+        return output
+
+    def test_epoch_end(self, outputs):
+        
+        if self.trainer.num_nodes > 1:
+            outputs = self.all_gather(outputs)
+        
+        preds = torch.cat([x['pred'].view(-1,self.num_classes) for x in outputs])
+        labels = torch.cat([x['label'].view(-1) for x in outputs]).view(-1)
+
+        auc = auroc(preds, labels, task='multiclass', num_classes=self.num_classes)
+        f1_micro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='micro')
+        f1_macro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='macro')
+        
+        self.log("test_auc", auc, prog_bar=True, logger=True,on_epoch=True)
+        self.log("test_f1_micro", f1_micro,prog_bar=True, logger=True)
+        self.log("test_f1_macro", f1_macro,prog_bar=True, logger=True)
+               
     def configure_optimizers(self):
         optimizer = getattr(optimizers,self.config['optimizer']['name'])(self.parameters(), **self.config['optimizer']['params'])
         scheduler = getattr(schedulers,self.config['scheduler']['name'])(optimizer,**self.config['scheduler']['params'])
