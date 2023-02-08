@@ -84,7 +84,7 @@ class R2plus1MultiModalPaper(nn.Module):
                  drop_out_rate_2,
                  drop_out_rate_3,
                  num_classes=2) -> None:
-        
+        super().__init__()
         self.backbone = nn.Sequential(*list(torchvision.models.video.r2plus1d_18(pretrained=True).children())[:-1])
         self.backbone[0][0] = nn.Conv3d(1, 45, kernel_size=(1, 7, 7), stride=(1, 2, 2), padding=(0, 3, 3), bias=False)
         
