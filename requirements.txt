@@ -11,3 +11,4 @@ nnunet
 deepspeed
 wandb
 optuna
+torchtext==0.10.1 
