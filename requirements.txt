@@ -5,8 +5,8 @@ pandas
 scikit-learn
 pytorch-lightning==1.5.0
 monai
-torchio
-numpy
+torchio==0.18.86
+numpy==1.23.5
 torchmetrics
 einops
 SimpleITK
