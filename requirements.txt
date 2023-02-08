@@ -1,6 +1,6 @@
 pandas
 scikit-learn
-pytorch-lightning
+pytorch-lightning==1.5.0
 monai
 torchio
 numpy
@@ -10,3 +10,4 @@ SimpleITK
 nnunet
 deepspeed
 wandb
+optuna
