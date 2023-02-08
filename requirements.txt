@@ -11,4 +11,4 @@ nnunet
 deepspeed
 wandb
 optuna
-torchvision==0.12.1
+torchvision==0.12
