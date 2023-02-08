@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import torch
 from torchmetrics.functional.classification import multiclass_f1_score
 from torchmetrics.functional import auroc
-import models
+import models.model
 import optimizers
 import schedulers
 
@@ -23,7 +23,7 @@ class MRSClassficationImgOnly(pl.LightningModule):
         print("class weights : ",self.class_weights)
         
         self.num_classes = self.config['model']['params']['num_classes']
-        self.model = getattr(models,self.config['model']['name'])(**self.config['model']['params'])
+        self.model = getattr(models.model,self.config['model']['name'])(**self.config['model']['params'])
         self.clsloss = nn.CrossEntropyLoss(weight=self.class_weights)
 
     def forward(self, img):
