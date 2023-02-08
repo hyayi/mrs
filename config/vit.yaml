@@ -3,9 +3,11 @@ lighthining_model :
   parmas :
 
   model :
-    name : "R2plus1d_18"
+    name : "Vit"
     params :
       num_classes : 2
+      img_size : [256,256,48]
+      patch_size : [16,16,8]
 
   optimizer :
     name : "AdamW"
