@@ -3,7 +3,19 @@ from sklearn.model_selection import StratifiedKFold
 import pickle
 import torch.nn as nn
 from nnunet.network_architecture.initialization import InitWeights_He
-
+import random 
+import os 
+import numpy as np
+import torch 
+def seed_everything(seed):
+    random.seed(seed)
+    os.environ['PYTHONHASHSEED'] = str(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    torch.cuda.manual_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+    
 def data_load(train_path, 
               val_path, 
               test_path,
