@@ -1,5 +1,11 @@
 import torch.nn as nn
 import torchvision
+from utils import create_prameter
+from nnunet.network_architecture.generic_UNet import Generic_UNet
+from nnunet.network_architecture.initialization import InitWeights_He
+import torch.nn.functional as F
+import torch
+from monai.networks.nets import ViT 
 
 class R2plus1d_18(nn.Module):
     def __init__(self, num_classes=2) -> None:
@@ -24,6 +30,37 @@ class Mc3_18(nn.Module):
         x = self.model(x)
         return x
 
+class nnUnet(Generic_UNet):
+    """Training with image only"""
 
+    def __init__(self, plans_path, weight=None):
         
-         
+        parameter = create_prameter(plans_path)
+        super().__init__(**parameter)
+
+        if weight :
+            self.load_state_dict(torch.load(weight)['state_dict'],strict=False)
+        
+        self.fc = nn.Linear(320, 2)
+    
+    def forward(self,x):
+
+        for d in range(len(self.conv_blocks_context) - 1):
+            x = self.conv_blocks_context[d](x)
+            if not self.convolutional_pooling:
+                x = self.td[d](x)
+        x = self.conv_blocks_context[-1](x)
+        img_em = F.adaptive_avg_pool3d(x, (1, 1,1)).view(x.shape[0],-1)
+        out = self.fc(img_em)
+   
+        return out
+
+class Vit(nn.Module):
+    def __init__(self,num_classes=2,img_size=(64,256,256), patch_size=(8,32,32) ) -> None:
+        super().__init__()
+        
+        self.backbone = ViT(in_channels=1, img_size=img_size,num_classes=num_classes,patch_size=patch_size, pos_embed='conv',classification=True)
+        
+    def forward(self, img):
+        x , _ = self.backbone(img)
+        return x
