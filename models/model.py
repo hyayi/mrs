@@ -33,7 +33,7 @@ class Mc3_18(nn.Module):
 class nnUnet(Generic_UNet):
     """Training with image only"""
 
-    def __init__(self, plans_path, weight=None):
+    def __init__(self, plans_path, weight=None,num_classes=2):
         
         parameter = create_prameter(plans_path)
         super().__init__(**parameter)
