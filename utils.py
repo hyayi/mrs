@@ -72,8 +72,10 @@ def data_load(train_path,
     
     if fold_num is not None :
         train_fold = pd.concat([train,val],axis=0)
-        kf = StratifiedKFold(n_splits=fold_num, shuffle=True, random_state=42)
-        
+        kf = StratifiedKFold(n_splits=fold_num, shuffle=True, random_state=42)        
+        drop_col = ['wbc','hb', 'plt', 'tc', 'tg', 'hdl', 'ldl', 'bun', 'cr', 'fbs', 'sbp', 'dbp','toast']
+        train_fold.drop(drop_col, axis=1, inplace=True)
+        test.drop(drop_col, axis=1, inplace=True)  
         for i, (train_index, val_index) in enumerate(kf.split(train_fold,train_fold['label'])):
             if i == fold:
                 train = train_fold.iloc[train_index].reset_index(drop=True)
