@@ -10,3 +10,4 @@ SimpleITK
 deepspeed
 wandb
 optuna
+albumentations
