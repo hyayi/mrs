@@ -33,7 +33,7 @@ datamodule :
 
   data_dir : "/home/lab/inseo/brain/data/total2"
   batch_size : 8
-  num_workers : 0
+  num_workers : 7
   pin_memory : False
 
 trainer :
