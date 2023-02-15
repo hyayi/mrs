@@ -1,0 +1,13 @@
+pandas
+scikit-learn
+pytorch-lightning==1.5.10
+monai
+torchio
+numpy
+torchmetrics
+einops
+SimpleITK
+deepspeed
+wandb
+optuna
+torchvision==0.12.1
