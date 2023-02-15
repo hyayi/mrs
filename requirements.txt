@@ -10,4 +10,4 @@ SimpleITK
 deepspeed
 wandb
 optuna
-torchvision==0.14
+albumentations
