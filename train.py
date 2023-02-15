@@ -2,8 +2,8 @@ import os
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 import pytorch_lightning as pl
-import lightning_model
-import  datamodule 
+import lighthining_model
+import  datamoules 
 import argparse
 import yaml
 import torch
@@ -33,9 +33,9 @@ def train(args):
     with open(args.config_path) as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
-    data_dm = getattr(datamodule, config['datamodule']['name'])(data_config=config['datamodule'])
+    data_dm = getattr(datamoules, config['datamodule']['name'])(data_config=config['datamodule'])
     class_weights = data_dm.class_weights
-    model = getattr(lightning_model, config['lighthining_model']['name'])(model_config=config['lighthining_model'],class_weights=class_weights)
+    model = getattr(lighthining_model, config['lighthining_model']['name'])(model_config=config['lighthining_model'],class_weights=class_weights)
     
     checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath=f"{args.save_path}/", save_top_k=1, monitor="val_auc",filename=f'{args.model_name}'+'-{epoch:02d}-{val_auc:.3f}',mode='max')
     callbacks = [checkpoint_callback]

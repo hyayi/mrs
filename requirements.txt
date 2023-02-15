@@ -1,11 +1,13 @@
 pandas
 scikit-learn
-pytorch-lightning
+pytorch-lightning==1.5.10
+monai
 torchio
 numpy
 torchmetrics
 einops
-nibabel
+SimpleITK
+deepspeed
 wandb
-albumentations
+optuna
 torchvision==0.14

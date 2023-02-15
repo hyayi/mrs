@@ -1,0 +1,67 @@
+lighthining_model :
+  name : "MRS2DClassficationMultiModal"
+  parmas :
+
+  model :
+    name : "Resnet50MultiModalPaper"
+    params :
+
+      hidden_dims_1 : [10,10]
+      hidden_dims_2 : [10,10,10]
+      hidden_dims_3 : [10]
+
+      drop_out_rate_1 : 0.2
+      drop_out_rate_2 : 0.2
+      drop_out_rate_3 : 0.2
+
+      num_classes : 2
+      clinical_feature_len : 30
+
+
+      
+  optimizer :
+    name : "AdamW"
+    params : 
+      lr : 0.0001
+      weight_decay : 0.0005
+  
+  scheduler :
+    name : "CosineAnnealingWarmUpRestarts"
+    params : 
+      T_0 : 50
+      T_mult : 1
+      eta_max : 0.001
+      T_up : 10
+      gamma : 0.5
+
+datamodule :
+  name : "BrainDataModule"
+  params : 
+
+  dataset :
+    name : 'MRSDataset2DMultiModal'
+    params : 
+      data_dir : "/home/lab/inseo/brain/data/total2"
+  
+  data_load_params :
+    train_path : "/home/lab/inseo/brain/data/total2/train.csv"
+    val_path : "/home/lab/inseo/brain/data/total2/val.csv"
+    test_path : "/home/lab/inseo/brain/data/total2/test.csv"
+    scaler_name : 'RobustScaler'
+    categorical_cols : ['sex','toast']
+    numerical_cols : ['age','bmi','ini_nih','pre_mrs','hx_str','hx_htn','hx_smoke','hx_af','tx_throm','wbc','hb', 'plt', 'tc', 'tg', 'hdl', 'ldl', 'bun', 'cr', 'fbs', 'sbp', 'dbp']
+    ignore_cols : ['image','label','mask_path']
+
+
+
+  dataloader : 
+    name :
+    params :
+      batch_size : 4
+      num_workers : 7
+      pin_memory : False
+
+trainer :
+  precision : 16
+  max_epochs : 50
+  gradient_clip_val : 10
