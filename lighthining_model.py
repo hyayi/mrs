@@ -87,9 +87,9 @@ class MRSClassfication2D(pl.LightningModule):
         f1_micro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='micro')
         f1_macro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='macro')
         
-        self.log("train_auc", auc,prog_bar=False, logger=True)
-        self.log("train_f1_micro", f1_micro,prog_bar=False, logger=True)
-        self.log("train_f1_macro", f1_macro,prog_bar=False, logger=True)
+        self.log("val_auc", auc,prog_bar=False, logger=True)
+        self.log("val_f1_micro", f1_micro,prog_bar=False, logger=True)
+        self.log("val_f1_macro", f1_macro,prog_bar=False, logger=True)
         
     def test_step(self, batch, batch_idx):
         
