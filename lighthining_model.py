@@ -34,18 +34,6 @@ class MRSClassfication2D(pl.LightningModule):
             model = models.inception_v3(pretrained=True)
             model.AuxLogits.fc = nn.Linear(768, num_classes)
             model.fc = nn.Linear(2048, num_classes)
-        elif model_name == 'convnext_base':
-            model = models.convnext_base(weights='DEFAULT')
-            model._modules['classifier']._modules['2'] = nn.Linear(1024, num_classes)
-        elif model_name == 'efficientnet_b7':
-            model = models.efficientnet_b7(weights='DEFAULT')
-            model._modules['classifier']._modules['1'] = nn.Linear(2560, num_classes)
-        elif model_name == 'vit_b_16':
-            model = models.vit_b_16(weights='DEFAULT')
-            model._modules['heads']._modules['head'] = nn.Linear(768, num_classes)
-        elif model_name == 'efficientnet_v2_m':
-            model = models.efficientnet_v2_m(weights='DEFAULT')
-            model._modules['classifier']._modules['1'] = nn.Linear(1280, num_classes)
         return model
             
     def forward(self, x):
