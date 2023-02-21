@@ -33,7 +33,7 @@ class Mc3_18(nn.Module):
 class nnUnet(Generic_UNet):
     """Training with image only"""
 
-    def __init__(self, plans_path, weight=None):
+    def __init__(self, plans_path,num_classes=2, weight=None):
         
         parameter = create_prameter(plans_path)
         super().__init__(**parameter)
@@ -41,7 +41,7 @@ class nnUnet(Generic_UNet):
         if weight :
             self.load_state_dict(torch.load(weight)['state_dict'],strict=False)
         
-        self.fc = nn.Linear(320, 2)
+        self.fc = nn.Linear(320, num_classes)
     
     def forward(self,x):
 
