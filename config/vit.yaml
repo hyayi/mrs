@@ -6,8 +6,8 @@ lighthining_model :
     name : "Vit"
     params :
       num_classes : 2
-      img_size : [256,256,48]
-      patch_size : [16,16,8]
+      img_size : [128,128,128]
+      patch_size : [16,16,16]
 
   optimizer :
     name : "AdamW"
@@ -54,7 +54,7 @@ datamodule :
 
       Spacingd : 
         keys : "img"
-        pixdim : [1,1,5]
+        pixdim : [1,1,1]
 
       Orientationd :
         keys : "img"
@@ -65,7 +65,7 @@ datamodule :
 
       Resized :
         keys : "img"
-        spatial_size : [256,256,48]
+        spatial_size : [128,128,128]
 
       RandRotated : 
         keys : "img"
@@ -83,7 +83,7 @@ datamodule :
 
       Spacingd : 
         keys : "img"
-        pixdim : [1,1,5]
+        pixdim : [1,1,1]
 
       Orientationd :
         keys : "img"
@@ -94,7 +94,7 @@ datamodule :
 
       Resized :
         keys : "img"
-        spatial_size : [256,256,48]
+        spatial_size : [128,128,128]
       EnsureTyped :
         keys : "img"
 
