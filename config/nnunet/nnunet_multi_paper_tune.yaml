@@ -6,7 +6,7 @@ lighthining_model :
     name : "nnUnetMultiModalPaper"
     params :
       num_classes : 2
-      clinical_feature_len : 30
+      clinical_feature_len : 11
       plans_path : '/home/lab/inseo/brain/model_best.model.pkl'
       weight : '/home/lab/inseo/brain/model_best.model'
       hidden_dims_1 : [10,10]
@@ -46,10 +46,12 @@ datamodule :
     val_path : "/home/lab/inseo/brain/data/total2/val.csv"
     test_path : "/home/lab/inseo/brain/data/total2/test.csv"
     scaler_name : 'RobustScaler'
-    categorical_cols : ['sex','toast']
-    numerical_cols : ['age','bmi','ini_nih','pre_mrs','hx_str','hx_htn','hx_smoke','hx_af','tx_throm','wbc','hb', 'plt', 'tc', 'tg', 'hdl', 'ldl', 'bun', 'cr', 'fbs', 'sbp', 'dbp']
+    #categorical_cols : ['sex','toast']
+    #numerical_cols : ['age','bmi','ini_nih','pre_mrs','hx_str','hx_htn','hx_smoke','hx_af','tx_throm','wbc','hb', 'plt', 'tc', 'tg', 'hdl', 'ldl', 'bun', 'cr', 'fbs', 'sbp', 'dbp']
+    #ignore_cols : ['image','label','mask_path']
+    categorical_cols : ['sex']
+    numerical_cols : ['age','bmi','ini_nih','pre_mrs','hx_str','hx_htn','hx_smoke','hx_af','tx_throm']
     ignore_cols : ['image','label','mask_path']
-
 
   dataloader : 
     name :
