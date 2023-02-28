@@ -6,7 +6,7 @@ lighthining_model :
     name : "nnUnetMultiModalPaper"
     params :
       num_classes : 2
-      clinical_feature_len : 11
+      clinical_feature_len : 30
       plans_path : '/home/lab/inseo/brain/model_best.model.pkl'
       weight : '/home/lab/inseo/brain/model_best.model'
       hidden_dims_1 : [10,10]
