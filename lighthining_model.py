@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch
 from torchmetrics.functional.classification import multiclass_f1_score
-from torchmetrics.functional import auroc
+from torchmetrics.functional import auroc,confusion_matrix
 import models
 import optimizers
 import schedulers
@@ -79,7 +79,6 @@ class MRSClassficationMultiModal(pl.LightningModule):
         auc = auroc(preds, labels, task='multiclass', num_classes=self.num_classes)
         f1_micro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='micro')
         f1_macro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='macro')
-        
         self.log("val_auc", auc, prog_bar=True, logger=True,on_epoch=True)
         self.log("val_f1_micro", f1_micro,prog_bar=True, logger=True)
         self.log("val_f1_macro", f1_macro,prog_bar=True, logger=True)
@@ -103,11 +102,16 @@ class MRSClassficationMultiModal(pl.LightningModule):
         auc = auroc(preds, labels, task='multiclass', num_classes=self.num_classes)
         f1_micro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='micro')
         f1_macro = multiclass_f1_score(preds,labels,num_classes=self.num_classes, average='macro')
+        confusion_matrix_value = confusion_matrix(preds,labels,num_classes=self.num_classes,task="multiclass")
         
-        self.log("test_auc", auc, prog_bar=True, logger=True,on_epoch=True)
-        self.log("test_f1_micro", f1_micro,prog_bar=True, logger=True)
-        self.log("test_f1_macro", f1_macro,prog_bar=True, logger=True)
-               
+        self.log("auc", auc, prog_bar=True, logger=True,on_epoch=True)
+        self.log("f1_micro", f1_micro,prog_bar=True, logger=True)
+        self.log("f1_macro", f1_macro,prog_bar=True, logger=True)
+        self.log('TN',confusion_matrix_value[0][0])
+        self.log('FP',confusion_matrix_value[0][1])
+        self.log('FN',confusion_matrix_value[1][0])
+        self.log('TP',confusion_matrix_value[1][1])
+        
     def configure_optimizers(self):
         optimizer = getattr(optimizers,self.config['optimizer']['name'])(self.parameters(), **self.config['optimizer']['params'])
         scheduler = getattr(schedulers,self.config['scheduler']['name'])(optimizer,**self.config['scheduler']['params'])

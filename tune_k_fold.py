@@ -39,6 +39,7 @@ def objective(trial):
     
     test_result = {}
     val_result = {}
+    train_result = {}
     
     for fold in range(args.fold_num):
         data_dm = getattr(datamoules, config['datamodule']['name'])(data_config=config['datamodule'],fold=fold, fold_num=args.fold_num)
@@ -48,19 +49,29 @@ def objective(trial):
         checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath=f"{args.save_path}/", save_top_k=1, monitor="val_auc",filename=f'{args.model_name}-{trial.number}-{fold}'+ '-{epoch:02d}-{val_auc:.3f}',mode='max')
         callbacks = [checkpoint_callback,PyTorchLightningPruningCallback(trial, monitor="val_auc")]
         
-        #wandb_logger = WandbLogger(project=args.model_name, name=f"{fold}", save_dir=f"{args.save_path}")
-        trainer = pl.Trainer(accelerator=args.accelerator, devices=args.devices,callbacks=callbacks,strategy=args.strategy,**config['trainer'])
+        wandb_logger = WandbLogger(project=args.model_name, name=f"{fold}", save_dir=f"{args.save_path}")
+        trainer = pl.Trainer(accelerator=args.accelerator, devices=args.devices,callbacks=callbacks,strategy=args.strategy,logger = wandb_logger, **config['trainer'])
         
         trainer.fit(model,data_dm)
         
         print(fold)
-        val_metric_list = trainer.validate(model,datamodule = data_dm, ckpt_path=checkpoint_callback.best_model_path)
-        test_metric_list = trainer.test(model,datamodule = data_dm, ckpt_path=checkpoint_callback.best_model_path)
-        
+        train_metric_list = trainer.test(model,dataloaders = data_dm.train_dataloader(), ckpt_path=checkpoint_callback.best_model_path)
+        val_metric_list = trainer.test(model,dataloaders = data_dm.val_dataloader(), ckpt_path=checkpoint_callback.best_model_path)
+        test_metric_list = trainer.test(model,datamodule = data_dm.test_dataloder(), ckpt_path=checkpoint_callback.best_model_path)
+    
+        train_result[f'{fold}'] = train_metric_list[0]
         test_result[f'{fold}'] = test_metric_list[0]
         val_result[f'{fold}'] = val_metric_list[0]
     
-    total_result = pd.concat([pd.DataFrame(val_result).T,pd.DataFrame(test_result).T], axis = 1)
+    train_result_df = pd.DataFrame(train_result).T
+    val_result_df = pd.DataFrame(val_result).T
+    test_result_df = pd.DataFrame(test_result).T
+    
+    train_result_df.columns = [f'train_{col}' for col in train_result_df.columns]
+    val_result_df.columns = [f'val_{col}' for col in val_result_df.columns]
+    test_result_df.columns = [f'test_{col}' for col in test_result_df.columns]
+    
+    total_result = pd.concat([train_result_df,val_result_df,test_result_df], axis = 1)
     total_result.to_csv(f'{args.save_path}/{args.model_name}_{trial.number}_total_result.csv')
     
     print(f'mean_val_score : {total_result["val_auc"].mean()} , std_val_score : {total_result["val_auc"].std()}')

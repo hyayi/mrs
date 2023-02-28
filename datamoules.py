@@ -20,20 +20,16 @@ class BrainDataModule(pl.LightningDataModule):
         self.val_transforms = Compose([getattr(transforms,name)(**params) for name, params in self.config['transforms']['val'].items()])
         
         self.class_weights = 1 - self.train['label'].value_counts(normalize=True).values
-        
-    def setup(self, stage = None):
-        if stage == 'fit' or stage is None:
-            self.train_ds = self.dataset(data_df=self.train, transforms= self.train_transforms, data_dir=self.config['dataset']['params']['data_dir'])
-            self.val_ds = self.dataset(data_df=self.val, transforms= self.val_transforms, data_dir=self.config['dataset']['params']['data_dir'])
 
-        if stage == 'test' or stage is None:
-            self.test_ds = self.dataset(data_df=self.test, transforms= self.val_transforms, data_dir=self.config['dataset']['params']['data_dir'])
 
     def train_dataloader(self):
+        self.train_ds = self.dataset(data_df=self.train, transforms= self.train_transforms, data_dir=self.config['dataset']['params']['data_dir'])
         return DataLoader(self.train_ds, batch_size=self.config['dataloader']['params']['batch_size'],num_workers=self.config['dataloader']['params']['num_workers'], pin_memory=self.config['dataloader']['params']['pin_memory'],shuffle=True)
 
     def val_dataloader(self):
+        self.val_ds = self.dataset(data_df=self.val, transforms= self.val_transforms, data_dir=self.config['dataset']['params']['data_dir'])
         return DataLoader(self.val_ds,batch_size=self.config['dataloader']['params']['batch_size'],num_workers=self.config['dataloader']['params']['num_workers'], pin_memory=self.config['dataloader']['params']['pin_memory'],shuffle=False)
 
     def test_dataloader(self):
+        self.test_ds = self.dataset(data_df=self.test, transforms= self.val_transforms, data_dir=self.config['dataset']['params']['data_dir'])
         return DataLoader(self.test_ds, batch_size=self.config['dataloader']['params']['batch_size'],num_workers=self.config['dataloader']['params']['num_workers'], pin_memory=self.config['dataloader']['params']['pin_memory'])
