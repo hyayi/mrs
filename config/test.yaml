@@ -54,8 +54,8 @@ datamodule :
     name :
     params :
       batch_size : 64
-      num_workers : 7
-      pin_memory : False
+      num_workers : 4
+      pin_memory : True
 
   transforms:
     train:
