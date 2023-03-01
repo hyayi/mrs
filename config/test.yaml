@@ -53,8 +53,8 @@ datamodule :
   dataloader : 
     name :
     params :
-      batch_size : 128
-      num_workers : 30
+      batch_size : 4
+      num_workers : 4
       pin_memory : True
 
   transforms:
