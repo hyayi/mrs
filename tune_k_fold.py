@@ -57,7 +57,7 @@ def objective(trial):
         print(fold)
         train_metric_list = trainer.test(model,dataloaders = data_dm.train_dataloader(), ckpt_path=checkpoint_callback.best_model_path)
         val_metric_list = trainer.test(model,dataloaders = data_dm.val_dataloader(), ckpt_path=checkpoint_callback.best_model_path)
-        test_metric_list = trainer.test(model,datamodule = data_dm.test_dataloader(), ckpt_path=checkpoint_callback.best_model_path)
+        test_metric_list = trainer.test(model,dataloaders = data_dm.test_dataloader(), ckpt_path=checkpoint_callback.best_model_path)
     
         train_result[f'{fold}'] = train_metric_list[0]
         test_result[f'{fold}'] = test_metric_list[0]
