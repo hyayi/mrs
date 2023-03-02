@@ -44,9 +44,9 @@ datamodule :
       data_dir : "/home/lab/inseo/brain/data/image_prepro"
   
   data_load_params :
-    train_path : "/home/lab/inseo/brain/data/total2/train.csv"
-    val_path : "/home/lab/inseo/brain/data/total2/val.csv"
-    test_path : "/home/lab/inseo/brain/data/total2/test.csv"
+    train_path : "/home/lab/inseo/brain/data/image_prepro/train.csv"
+    val_path : "/home/lab/inseo/brain/data/image_prepro/val.csv"
+    test_path : "/home/lab/inseo/brain/data/image_prepro/test.csv"
     scaler_name : 'RobustScaler'
     categorical_cols : ['sex','toast']
     numerical_cols : ['age','bmi','ini_nih','pre_mrs','hx_str','hx_htn','hx_smoke','hx_af','tx_throm','wbc','hb', 'plt', 'tc', 'tg', 'hdl', 'ldl', 'bun', 'cr', 'fbs', 'sbp', 'dbp']
