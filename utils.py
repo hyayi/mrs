@@ -76,10 +76,10 @@ def data_load(train_path,
         
         for i, (train_index, val_index) in enumerate(kf.split(train_fold,train_fold['label'])):
             if i == fold:
-                train = train_fold.iloc[train_index].reset_index(drop=True)
-                val = train_fold.iloc[val_index].reset_index(drop=True)
+                train = train_fold.iloc[train_index].reset_index(drop=True)[[categorical_cols]+[numerical_cols]+[ignore_cols]]
+                val = train_fold.iloc[val_index].reset_index(drop=True)[[categorical_cols]+[numerical_cols]+[ignore_cols]]
                 break
-                 
+    
     train, val, test = clinical_data_preprocessing(train, val, test, scaler_name, categorical_cols, numerical_cols, ignore_cols)
     
     print(fold)    
