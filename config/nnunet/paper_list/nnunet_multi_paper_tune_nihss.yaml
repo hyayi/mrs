@@ -48,7 +48,7 @@ datamodule :
     scaler_name : 'RobustScaler'
     categorical_cols : []
     numerical_cols : ['ini_nih']
-    ignore_cols : ['image','label','mask_path']
+    ignore_cols : ['image','label','mask']
 
   dataloader : 
     name :

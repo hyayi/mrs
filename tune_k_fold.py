@@ -45,6 +45,7 @@ def objective(trial):
         data_dm = getattr(datamoules, config['datamodule']['name'])(data_config=config['datamodule'],fold=fold, fold_num=args.fold_num)
         class_weights = data_dm.class_weights
         
+        config['lighthining_model']['model']['params']['clinical_feature_len'] = data_dm.clincal_feature_len
         model = getattr(lighthining_model, config['lighthining_model']['name'])(model_config=config['lighthining_model'],class_weights=class_weights)
         checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath=f"{args.save_path}/", save_top_k=1, monitor="val_auc",filename=f'{args.model_name}-{trial.number}-{fold}'+ '-{epoch:02d}-{val_auc:.3f}',mode='max')
         callbacks = [checkpoint_callback,PyTorchLightningPruningCallback(trial, monitor="val_auc")]

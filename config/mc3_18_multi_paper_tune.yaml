@@ -44,13 +44,13 @@ datamodule :
       data_dir : "D:/study_d/project/brain/code/data/image"
   
   data_load_params :
-    train_path : "D:/study_d/project/brain/code/data/annotation/train.csv"
+    train_path : "D:/study_d/project/brain/code/data/annotation/val.csv"
     val_path : "D:/study_d/project/brain/code/data/annotation/val.csv"
-    test_path : "D:/study_d/project/brain/code/data/annotation/test.csv"
+    test_path : "D:/study_d/project/brain/code/data/annotation/val.csv"
     scaler_name : 'RobustScaler'
     categorical_cols : ['sex','toast']
-    numerical_cols : ['age','bmi','ini_nih','pre_mrs','hx_str','hx_htn','hx_smoke','hx_af','tx_throm','wbc','hb', 'plt', 'tc', 'tg', 'hdl', 'ldl', 'bun', 'cr', 'fbs', 'sbp', 'dbp']
-    ignore_cols : ['image','label','mask_path']
+    numerical_cols : ['age','bmi','ini_nih','hx_str','hx_htn','hx_smoke','hx_af','tx_throm','wbc','hb', 'plt', 'tc', 'tg', 'hdl', 'ldl', 'bun', 'cr', 'fbs', 'sbp', 'dbp']
+    ignore_cols : ['image','label','mask']
 
 
 

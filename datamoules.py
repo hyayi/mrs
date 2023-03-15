@@ -20,6 +20,7 @@ class BrainDataModule(pl.LightningDataModule):
         self.val_transforms = Compose([getattr(transforms,name)(**params) for name, params in self.config['transforms']['val'].items()])
         
         self.class_weights = 1 - self.train['label'].value_counts(normalize=True).values
+        self.clincal_feature_len = len(self.train.columns) - 3
 
 
     def train_dataloader(self):

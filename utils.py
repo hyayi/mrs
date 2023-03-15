@@ -73,14 +73,21 @@ def data_load(train_path,
     if fold_num is not None :
         train_fold = pd.concat([train,val],axis=0)
         kf = StratifiedKFold(n_splits=fold_num, shuffle=True, random_state=42)
-        
+        print(categorical_cols)
+        print(numerical_cols)
+        print(ignore_cols)
+        target = ignore_cols + categorical_cols+numerical_cols
+
+        print(target)
         for i, (train_index, val_index) in enumerate(kf.split(train_fold,train_fold['label'])):
             if i == fold:
-                train = train_fold.iloc[train_index].reset_index(drop=True)[[categorical_cols]+[numerical_cols]+[ignore_cols]]
-                val = train_fold.iloc[val_index].reset_index(drop=True)[[categorical_cols]+[numerical_cols]+[ignore_cols]]
+                train = train_fold.iloc[train_index].reset_index(drop=True)
+                val = train_fold.iloc[val_index].reset_index(drop=True)
+                train = train[target]
+                val = val[target]
                 break
     
-    train, val, test = clinical_data_preprocessing(train, val, test, scaler_name, categorical_cols, numerical_cols, ignore_cols)
+    train, val, test = clinical_data_preprocessing(train, val, test[target], scaler_name, categorical_cols, numerical_cols, ignore_cols)
     
     print(fold)    
     print(f"train counte:{len(train)}, train 0 count : {train['label'].value_counts()[0]}, train 1 count : {train['label'].value_counts()[1]}")

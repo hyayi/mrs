@@ -48,7 +48,7 @@ datamodule :
     scaler_name : 'RobustScaler'
     categorical_cols : ['sex','toast']
     numerical_cols : ['age','bmi','ini_nih','hx_str','hx_htn','hx_smoke','hx_af','tx_throm','wbc','hb', 'plt', 'tc', 'tg', 'hdl', 'ldl', 'bun', 'cr', 'fbs', 'sbp', 'dbp']
-    ignore_cols : ['image','label','mask_path']
+    ignore_cols : ['image','label','mask']
 
   dataloader : 
     name :
