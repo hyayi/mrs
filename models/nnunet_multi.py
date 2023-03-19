@@ -5,6 +5,27 @@ from nnunet.network_architecture.generic_UNet import Generic_UNet
 from nnunet.network_architecture.initialization import InitWeights_He
 import torch.nn.functional as F
 
+def create_layers(layer_list,in_features,drop_out_rate=None,is_head=False,num_classes=None):
+        layers = []
+        
+        for i in range(len(layer_list)):
+            
+            out_features = layer_list[i]
+            
+            layers.append(nn.Linear(in_features, out_features))
+            layers.append(nn.LeakyReLU())
+
+            in_features = out_features
+        
+        if not is_head:
+            layers.append(nn.Dropout(drop_out_rate))
+            return nn.Sequential(*layers), out_features
+        
+        else:
+            layers.append(nn.Linear(in_features, num_classes))
+            return nn.Sequential(*layers)
+    
+
 def create_prameter(plans_path):
     
     with open(plans_path,"rb") as fr:
@@ -171,6 +192,32 @@ class nnUnetMultiModalPaper(nn.Module):
                             nn.ReLU(inplace=True),
                             nn.Dropout(drop_out_rate_3),
                             nn.Linear(hidden_dims_3[0], num_classes))
+    
+    def forward(self, img, clinical):
+        img = self.backbone(img)
+        img = img.flatten(start_dim=1)
+        img = self.fc1(img)
+        clinical =  self.fc2(clinical)
+        out = self.head(torch.cat([img, clinical], dim=1))
+        return out
+    
+    
+
+class nnUnetMultiModalPaperGL(nn.Module):
+    def __init__(self, clinical_feature_len,
+                 plans_path, 
+                 fc1_list,
+                 fc2_list,
+                 head_list,
+                 drop_out_rate_1,
+                 drop_out_rate_2,
+                 num_classes=2,weight=None) -> None:
+        super().__init__()
+        
+        self.backbone = nnUnetBackbone(plans_path,weight)
+        self.fc1,output_feature1 = create_layers(fc1_list,320,drop_out_rate_1)
+        self.fc2,output_feature2 = create_layers(fc2_list,clinical_feature_len,drop_out_rate_2)
+        self.head =  create_layers(head_list,output_feature1+output_feature2,is_head=True,num_classes=num_classes)
     
     def forward(self, img, clinical):
         img = self.backbone(img)
