@@ -3,11 +3,11 @@ lighthining_model :
   parmas :
 
   model :
-    name : "nnUnet"
+    name : "nnUnetGL"
     params :
       num_classes : 2
-      plans_path : '/home/lab/inseo/brain/model_best.model.pkl'
-      weight : '/home/lab/inseo/brain/model_best.model'
+      plans_path : 'D:/study_d/project/brain/code/img_talu/model_best.model.pkl'
+      fc_list : [10,10,10]
       
   optimizer :
     name : "AdamW"
@@ -31,18 +31,18 @@ datamodule :
   dataset :
     name : 'MRSImaOlnyDataset'
     params : 
-      data_dir : "/home/lab/inseo/brain/data/total2"
+      data_dir : "D:/study_d/project/brain/code/data/image"
   
   data_load_params :
-    train_path : "/home/lab/inseo/brain/data/total2/train.csv"
-    val_path : "/home/lab/inseo/brain/data/total2/val.csv"
-    test_path : "/home/lab/inseo/brain/data/total2/test.csv"
+    train_path : "D:/study_d/project/brain/code/data/annotation/val.csv"
+    val_path : "D:/study_d/project/brain/code/data/annotation/val.csv"
+    test_path : "D:/study_d/project/brain/code/data/annotation/val.csv"
 
   dataloader : 
     name :
     params :
-      batch_size : 4
-      num_workers : 7
+      batch_size : 32
+      num_workers : 0
       pin_memory : False
 
   transforms:
@@ -65,7 +65,7 @@ datamodule :
 
       Resized :
         keys : "img"
-        spatial_size : [256,256,48]
+        spatial_size : [32,32,24]
 
       RandRotated : 
         keys : "img"
@@ -94,11 +94,11 @@ datamodule :
 
       Resized :
         keys : "img"
-        spatial_size :  [256,256,48]
+        spatial_size :  [32,32,24]
       EnsureTyped :
         keys : "img"
 
 trainer :
   precision : 16
-  max_epochs : 50
+  max_epochs : 2
   gradient_clip_val : 10

@@ -3,11 +3,12 @@ lighthining_model :
   parmas :
 
   model :
-    name : "nnUnet"
+    name : "nnUnetGL"
     params :
       num_classes : 2
       plans_path : '/home/lab/inseo/brain/model_best.model.pkl'
       weight : '/home/lab/inseo/brain/model_best.model'
+      fc_list : [10,10,10]
       
   optimizer :
     name : "AdamW"
