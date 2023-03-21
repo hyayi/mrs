@@ -3,7 +3,7 @@ lighthining_model :
   parmas :
 
   model :
-    name : "nnUnetMultiModalFeatureConcatTest2"
+    name : "nnUnetMultiModalFeatureConcatTest3"
     params :
       num_classes : 2
       clinical_feature_len : 11
