@@ -4,7 +4,7 @@ import torch.nn as nn
 from nnunet.network_architecture.generic_UNet import Generic_UNet
 from nnunet.network_architecture.initialization import InitWeights_He
 import torch.nn.functional as F
-from d1cnn import SoftOrdering1DCNN
+from .d1cnn import SoftOrdering1DCNN
 
 def create_layers(layer_list,in_features,drop_out_rate=None,is_head=False,num_classes=None):
         layers = []
