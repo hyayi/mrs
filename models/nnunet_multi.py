@@ -259,3 +259,33 @@ class nnUnetMultiModalFeatureConcatTest(nn.Module):
         concat_x = torch.cat([x, c_x], dim=1)
         out = self.head(concat_x)
         return img_out, clinical_out, out
+    
+class nnUnetMultiModalFeatureConcatTest2(nn.Module):
+    def __init__(self, clinical_feature_len,plans_path,head='linear', num_classes=2,weight=None) -> None:
+        super().__init__()
+        
+        self.backbone =nnUnetBackbone(plans_path,weight)
+        self.clinical_backbone = nn.Sequential(nn.Linear(clinical_feature_len, int(clinical_feature_len/2)),nn.LeakyReLU())
+
+        if head == 'linear':
+            self.head = nn.Linear(320+clinical_feature_len, num_classes)
+    
+        elif head == 'mlp':
+            self.head = nn.Sequential(
+                nn.Linear(320+int(clinical_feature_len/2), int((320+int(clinical_feature_len/2))/2)),
+                nn.LeakyReLU(inplace=True),
+                nn.Linear(int((320+int(clinical_feature_len/2))/2), num_classes)
+            )
+        
+        self.img_head = nn.Linear(320, num_classes)
+        self.clinical_head = nn.Linear(int(clinical_feature_len/2), num_classes)
+    
+    def forward(self, img, clinical):
+        x = self.backbone(img)
+        x = x.flatten(start_dim=1)
+        c_x = self.clinical_backbone(clinical)
+        img_out = self.img_head(x)
+        clinical_out = self.clinical_head(c_x)
+        concat_x = torch.cat([x, c_x], dim=1)
+        out = self.head(concat_x)
+        return img_out, clinical_out, out
