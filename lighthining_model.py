@@ -25,7 +25,7 @@ class MRSClassficationMultiModal(pl.LightningModule):
         self.num_classes = self.config['model']['params']['num_classes']
         self.model = getattr(models,self.config['model']['name'])(**self.config['model']['params'])
         self.clsloss = nn.CrossEntropyLoss(weight=self.class_weights)
-        if model_config['model']['params']['freeze_backbone']:
+        if model_config['model']['freeze_backbone']:
             for param in self.model.backbone.parameters():
                 param.requires_grad = False
 
