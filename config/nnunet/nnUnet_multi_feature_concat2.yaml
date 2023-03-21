@@ -9,7 +9,7 @@ lighthining_model :
       clinical_feature_len : 11
       head : mlp 
       plans_path : '/home/lab/inseo/brain/model_best.model.pkl'
-      weight : '/home/lab/inseo/brain/model_best.model'
+      weight : '/home/lab/inseo/brain/nnunet-epoch=05-val_auc=0.705.ckpt'
 
   optimizer :
     name : "AdamW"

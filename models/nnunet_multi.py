@@ -60,12 +60,17 @@ def create_prameter(plans_path):
 class nnUnetBackbone(Generic_UNet):
     """Training with image only"""
 
-    def __init__(self, plans_path, weight=None):
+    def __init__(self, plans_path, seg_weight=None, weight=None):
         
         parameter = create_prameter(plans_path)
         super().__init__(**parameter)
 
-        if weight :
+        if seg_weight :
+            self.load_state_dict(torch.load(seg_weight)['state_dict'],strict=False)
+        
+        elif weight:
+            checkpoint = torch.load(weight)
+            checkpoint['state_dict'] = {k.replace('model.',''):v for k,v in checkpoint['state_dict'].items()}
             self.load_state_dict(torch.load(weight)['state_dict'],strict=False)
     
     def forward(self,x):
