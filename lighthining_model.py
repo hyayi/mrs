@@ -39,7 +39,7 @@ class MRSClassficationMultiModal(pl.LightningModule):
         img_loss = self.clsloss(img_pred, label)
         clinical_loss = self.clsloss(clinical_pred, label)
         loss = self.clsloss(pred, label)
-        total_loss = 0.25*img_loss + 0.25*clinical_loss + 0.5*loss
+        total_loss = (img_loss + clinical_loss + loss)/3
         
         self.log("train_img_loss", img_loss, on_epoch=True, prog_bar=False, logger=True)
         self.log("train_clinical_loss", clinical_loss, on_epoch=True, prog_bar=False, logger=True)
