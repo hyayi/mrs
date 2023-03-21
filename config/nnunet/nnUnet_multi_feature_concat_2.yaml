@@ -3,13 +3,14 @@ lighthining_model :
   parmas :
 
   model :
-    name : "nnUnetMultiModalFeatureConcatTest"
+    name : "nnUnetMultiModalFeatureConcatTest2"
     params :
       num_classes : 2
       clinical_feature_len : 11
       head : mlp 
       plans_path : '/home/lab/inseo/brain/model_best.model.pkl'
-      weight : '/home/lab/inseo/brain/model_best.model'
+      weight : '/home/lab/inseo/brain/nnunet-epoch=05-val_auc=0.705.ckpt'
+      freeze_backbone : False
 
   optimizer :
     name : "AdamW"

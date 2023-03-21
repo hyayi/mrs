@@ -25,13 +25,14 @@ class MRSClassficationMultiModal(pl.LightningModule):
         self.num_classes = self.config['model']['params']['num_classes']
         self.model = getattr(models,self.config['model']['name'])(**self.config['model']['params'])
         self.clsloss = nn.CrossEntropyLoss(weight=self.class_weights)
-        self.model.backbone.freeze()
+        if model_config['model']['params']['freeze_backbone']:
+            for param in self.model.backbone.parameters():
+                param.requires_grad = False
 
     def forward(self, img, clinical):
         return self.model(img, clinical)
 
     def training_step(self, batch, batch_idx):
-        self.model.backbone.freeze()
         img, clinical, label = batch
         img_pred, clinical_pred, pred = self(img, clinical)
         

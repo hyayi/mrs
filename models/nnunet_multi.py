@@ -236,11 +236,12 @@ class nnUnetMultiModalPaperGL(nn.Module):
 
 
 class nnUnetMultiModalFeatureConcatTest(nn.Module):
-    def __init__(self, clinical_feature_len,plans_path,head='linear', num_classes=2,weight=None) -> None:
+    def __init__(self, clinical_feature_len,plans_path,head='linear', num_classes=2,weight=None,seg_weight=None) -> None:
         super().__init__()
         
-        self.backbone = nn.Sequential(nnUnetBackbone(plans_path,weight),nn.Linear(320, 160),nn.LeakyReLU(),nn.Linear(160, 80),nn.LeakyReLU(),nn.Linear(80, 20),nn.LeakyReLU())
+        self.backbone = nnUnetBackbone(plans_path,seg_weight,weight)
         self.clinical_backbone = nn.Sequential(nn.Linear(clinical_feature_len, int(clinical_feature_len/2)),nn.LeakyReLU())
+        self.backbone_mlp =nn.Sequential(nn.Linear(320, 160),nn.LeakyReLU(),nn.Linear(160, 80),nn.LeakyReLU(),nn.Linear(80, 20),nn.LeakyReLU())
 
         if head == 'linear':
             self.head = nn.Linear(320+clinical_feature_len, num_classes)
@@ -258,18 +259,19 @@ class nnUnetMultiModalFeatureConcatTest(nn.Module):
     def forward(self, img, clinical):
         x = self.backbone(img)
         x = x.flatten(start_dim=1)
+        x_mlp = self.backbone_mlp(x)
         c_x = self.clinical_backbone(clinical)
-        img_out = self.img_head(x)
+        img_out = self.img_head(x_mlp)
         clinical_out = self.clinical_head(c_x)
-        concat_x = torch.cat([x, c_x], dim=1)
+        concat_x = torch.cat([x_mlp, c_x], dim=1)
         out = self.head(concat_x)
         return img_out, clinical_out, out
     
 class nnUnetMultiModalFeatureConcatTest2(nn.Module):
-    def __init__(self, clinical_feature_len,plans_path,head='linear', num_classes=2,weight=None) -> None:
+    def __init__(self, clinical_feature_len,plans_path,head='linear', num_classes=2,weight=None,seg_weight=None) -> None:
         super().__init__()
         
-        self.backbone =nnUnetBackbone(plans_path,weight)
+        self.backbone =nnUnetBackbone(plans_path,seg_weight,weight)
         self.clinical_backbone = nn.Sequential(nn.Linear(clinical_feature_len, int(clinical_feature_len/2)),nn.LeakyReLU())
 
         if head == 'linear':
