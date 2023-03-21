@@ -3,7 +3,7 @@ lighthining_model :
   parmas :
 
   model :
-    name : "nnUnetMultiModalFeatureConcatTest3"
+    name : "nnUnetMultiModalFeatureConcatTest4"
     params :
       num_classes : 2
       clinical_feature_len : 11
@@ -15,7 +15,7 @@ lighthining_model :
   optimizer :
     name : "AdamW"
     params : 
-      lr : 0.0001
+      lr : 0.001
       weight_decay : 0.0005
   
   scheduler :
@@ -48,7 +48,7 @@ datamodule :
   dataloader : 
     name :
     params :
-      batch_size : 32
+      batch_size : 8
       num_workers : 7
       pin_memory : False
 
@@ -106,5 +106,4 @@ datamodule :
         keys : "img"
 trainer :
   precision : 16
-  max_epochs : 100
-  gradient_clip_val : 10
+  max_epochs : 25

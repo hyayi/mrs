@@ -4,6 +4,7 @@ import torch.nn as nn
 from nnunet.network_architecture.generic_UNet import Generic_UNet
 from nnunet.network_architecture.initialization import InitWeights_He
 import torch.nn.functional as F
+from d1cnn import SoftOrdering1DCNN
 
 def create_layers(layer_list,in_features,drop_out_rate=None,is_head=False,num_classes=None):
         layers = []
@@ -329,3 +330,38 @@ class nnUnetMultiModalFeatureConcatTest3(nn.Module):
         out = self.head(concat_x)
         mean_out = torch.mean(torch.stack([img_out, clinical_out, out]), dim=0)
         return img_out, clinical_out, out ,mean_out
+    
+class nnUnetMultiModalFeatureConcatTest4(nn.Module):
+    def __init__(self, clinical_feature_len,plans_path,head='linear', num_classes=2,weight=None,seg_weight=None) -> None:
+        super().__init__()
+        
+        self.backbone =nnUnetBackbone(plans_path,seg_weight,weight)
+        self.head = SoftOrdering1DCNN(320+clinical_feature_len,num_classes,sign_size=320+clinical_feature_len)
+        self.img_head = nn.Linear(320, num_classes)
+        self.clinical_head = nn.Linear(clinical_feature_len, num_classes)
+
+    
+    def forward(self, img, clinical):
+        x = self.backbone(img)
+        x = x.flatten(start_dim=1)
+        c_out = self.clinical_head(clinical)
+        img_out = self.img_head(x)
+        concat_x = torch.cat([x, clinical], dim=1)
+        out = self.head(concat_x)
+        mean_out = torch.mean(torch.stack([img_out, c_out, out]), dim=0)
+        return img_out, c_out, out ,mean_out
+
+class nnUnetMultiModalFeatureConcat1DCNN(nn.Module):
+    def __init__(self, clinical_feature_len,plans_path,head='linear', num_classes=2,weight=None,seg_weight=None) -> None:
+        super().__init__()
+        
+        self.backbone = nnUnetBackbone(plans_path,seg_weight,weight)
+        self.head = SoftOrdering1DCNN(320+clinical_feature_len,num_classes,sign_size=320+clinical_feature_len)
+        self.img_head = nn.Linear(320,num_classes)
+        
+    def forward(self, img, clinical):
+        x = self.backbone(img)
+        x = x.flatten(start_dim=1)
+        x = torch.cat([x, clinical], dim=1)
+        x = self.head(x)
+        return x
