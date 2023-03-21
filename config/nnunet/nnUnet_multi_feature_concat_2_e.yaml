@@ -107,3 +107,4 @@ datamodule :
 trainer :
   precision : 16
   max_epochs : 100
+  gradient_clip_val : 10
