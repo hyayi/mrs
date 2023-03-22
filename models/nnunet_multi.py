@@ -393,11 +393,11 @@ class nnUnetMultiModalFeatureConcatTest5(nn.Module):
         x = x.flatten(start_dim=1)
         
         x = nn.Linear(320, 160)(x)
-        x = nn.LeakyReLU(inplace=True)(x)
+        x = nn.LeakyReLU()(x)
         x = nn.Linear(160, 80)(x)
-        x = nn.LeakyReLU(inplace=True)(x)
+        x = nn.LeakyReLU()(x)
         x = nn.Linear(80, int(clinical.shape[1]/2))(x)
-        x = nn.LeakyReLU(inplace=True)(x)
+        x = nn.LeakyReLU()(x)
         
         c_x = self.clinical_backbone(clinical)
         total = x + c_x
@@ -433,11 +433,11 @@ class nnUnetMultiModalFeatureConcatTest6(nn.Module):
         x = x.flatten(start_dim=1)
         
         x = nn.Linear(320, 160)(x)
-        x = nn.LeakyReLU(inplace=True)(x)
+        x = nn.LeakyReLU()(x)
         x = nn.Linear(160, 80)(x)
-        x = nn.LeakyReLU(inplace=True)(x)
+        x = nn.LeakyReLU()(x)
         x = nn.Linear(80, int(clinical.shape[1]/2))(x)
-        x = nn.LeakyReLU(inplace=True)(x)
+        x = nn.LeakyReLU()(x)
         c_x = self.clinical_backbone(clinical)
         total = x * c_x
         img_out = self.img_head(x)
