@@ -380,9 +380,9 @@ class nnUnetMultiModalFeatureConcatTest5(nn.Module):
     
         elif head == 'mlp':
             self.head = nn.Sequential(
-                nn.Linear(2*int(clinical_feature_len/2), int((2*int(clinical_feature_len/2))/2)),
+                nn.Linear(int(clinical_feature_len/2), int((int(clinical_feature_len/2))/2)),
                 nn.LeakyReLU(inplace=True),
-                nn.Linear(2*((40+int(clinical_feature_len/2))/2), num_classes)
+                nn.Linear(int((int(clinical_feature_len/2))/2), num_classes)
             )
         
         self.img_head = nn.Linear(40, num_classes)
@@ -400,10 +400,10 @@ class nnUnetMultiModalFeatureConcatTest5(nn.Module):
         x = nn.LeakyReLU(inplace=True)(x)
         
         c_x = self.clinical_backbone(clinical)
+        total = x + c_x
         img_out = self.img_head(x)
         clinical_out = self.clinical_head(c_x)
-        x = x + c_x
-        out = self.head(x)
+        out = self.head(total)
         mean_out = torch.mean(torch.stack([img_out, clinical_out, out]), dim=0)
         return img_out, clinical_out, out ,mean_out
     
@@ -420,9 +420,9 @@ class nnUnetMultiModalFeatureConcatTest6(nn.Module):
     
         elif head == 'mlp':
             self.head = nn.Sequential(
-                nn.Linear(2*int(clinical_feature_len/2), 2*int((2*int(clinical_feature_len/2))/2)),
+                nn.Linear(int(clinical_feature_len/2), int((int(clinical_feature_len/2))/2)),
                 nn.LeakyReLU(inplace=True),
-                nn.Linear(2*int((2*int(clinical_feature_len/2))/2), num_classes)
+                nn.Linear(int((int(clinical_feature_len/2))/2), num_classes)
             )
         
         self.img_head = nn.Linear(40, num_classes)
@@ -438,11 +438,10 @@ class nnUnetMultiModalFeatureConcatTest6(nn.Module):
         x = nn.LeakyReLU(inplace=True)(x)
         x = nn.Linear(80, int(clinical.shape[1]/2))(x)
         x = nn.LeakyReLU(inplace=True)(x)
-        
         c_x = self.clinical_backbone(clinical)
+        total = x * c_x
         img_out = self.img_head(x)
         clinical_out = self.clinical_head(c_x)
-        x = x * c_x
-        out = self.head(x)
+        out = self.head(total)
         mean_out = torch.mean(torch.stack([img_out, clinical_out, out]), dim=0)
         return img_out, clinical_out, out ,mean_out
