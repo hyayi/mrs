@@ -1,11 +1,11 @@
 lighthining_model :
-  name : "MRSClassficationMultiModal1"
+  name : "MRSClassficationMultiModalBE"
   parmas :
 
   model :
-    name : "nnUnetMultiModalFeatureConcatBE"
+    name : "nnUnetMultiModalFeatureConcatTest3"
     params :
-      num_classes : 1
+      num_classes : 
       clinical_feature_len : 11
       head : mlp 
       plans_path : '/home/lab/inseo/brain/model_best.model.pkl'
