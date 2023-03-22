@@ -389,3 +389,127 @@ class MRSClassficationMultiModal(pl.LightningModule):
         #scheduler = getattr(schedulers,self.config['scheduler']['name'])(optimizer,**self.config['scheduler']['params'])
         
         return [optimizer]
+
+
+class MRSClassficationMultiModalBE(pl.LightningModule):
+
+    def __init__(self,model_config, class_weights):
+        super().__init__()
+        self.save_hyperparameters()
+        self.config = model_config
+
+            
+        
+        self.num_classes = self.config['model']['params']['num_classes']
+        self.model = getattr(models,self.config['model']['name'])(**self.config['model']['params'])
+        self.clsloss = nn.BCEWithLogitsLoss()
+        if model_config['model']['freeze_backbone']:
+            for param in self.model.backbone.parameters():
+                param.requires_grad = False
+
+    def forward(self, img, clinical):
+        return self.model(img, clinical)
+
+    def training_step(self, batch, batch_idx):
+        img, clinical, label = batch
+        img_pred, clinical_pred, pred, mean_pred = self(img, clinical)
+        
+        img_loss = self.clsloss(img_pred, label)
+        clinical_loss = self.clsloss(clinical_pred, label)
+        loss = self.clsloss(pred, label)
+        total_loss = self.clsloss(mean_pred, label)
+        
+        self.log("train_img_loss", img_loss, on_epoch=True, prog_bar=False, logger=True)
+        self.log("train_clinical_loss", clinical_loss, on_epoch=True, prog_bar=False, logger=True)
+        self.log("train_loss", loss, on_epoch=True, prog_bar=True, logger=True)
+        self.log("train_total_loss", total_loss, on_epoch=True, prog_bar=True, logger=True)
+        
+        output = {'loss':total_loss,'pred':pred,'img_pred' : img_pred, 'clinical_pred' : clinical_pred,'mean_pred' : mean_pred, "label" :label}
+        
+        return output
+    
+    def training_epoch_end(self, outputs): 
+        
+       if self.trainer.num_nodes > 1:
+           outputs = self.all_gather(outputs)
+       img_preds = torch.cat([x['img_pred'] for x in outputs])
+       clinical_preds = torch.cat([x['clinical_pred'] for x in outputs])
+       preds = torch.cat([x['pred'] for x in outputs])
+       mean_pred = torch.cat([x['mean_pred'] for x in outputs])
+       labels = torch.cat([x['label'] for x in outputs])
+       
+       img_auc = auroc(img_preds, labels, task='binary')
+       clinical_auc = auroc(clinical_preds, labels, task='binary')
+       auc = auroc(preds, labels, task='multiclbinaryass')
+       mean_auc = auroc(mean_pred, labels, task='binary')
+       
+       self.log_dict({"train_concat_auc" :  auc, "train_img_auc" : img_auc, "train_clinical_auc" : clinical_auc, "train_auc" : mean_auc}, prog_bar=True, logger=True)
+       
+
+    def validation_step(self, batch, batch_idx):
+        
+        img, clinical, label = batch
+        img_pred, clinical_pred, pred, mean_pred = self(img, clinical)
+        
+        img_loss = self.clsloss(img_pred, label)
+        clinical_loss = self.clsloss(clinical_pred, label)
+        loss = self.clsloss(pred, label)
+        total_loss = self.clsloss(mean_pred, label)
+        
+        self.log("val_img_loss", img_loss, on_epoch=True, prog_bar=False, logger=True)
+        self.log("val_clinical_loss", clinical_loss, on_epoch=True, prog_bar=False, logger=True)
+        self.log("val_loss", loss, on_epoch=True, prog_bar=True, logger=True)
+        self.log("val_total_loss", total_loss, on_epoch=True, prog_bar=True, logger=True)
+        
+        output = {'loss':total_loss,'pred':pred,'img_pred' : img_pred, 'clinical_pred' : clinical_pred,'mean_pred' : mean_pred, "label" :label}
+        
+        return output
+
+    def validation_epoch_end(self, outputs):
+        
+       if self.trainer.num_nodes > 1:
+           outputs = self.all_gather(outputs)
+       img_preds = torch.cat([x['img_pred'] for x in outputs])
+       clinical_preds = torch.cat([x['clinical_pred'] for x in outputs])
+       preds = torch.cat([x['pred'] for x in outputs])
+       mean_pred = torch.cat([x['mean_pred'] for x in outputs])
+       labels = torch.cat([x['label'] for x in outputs])
+       
+       img_auc = auroc(img_preds, labels, task='binary')
+       clinical_auc = auroc(clinical_preds, labels, task='binary')
+       auc = auroc(preds, labels, task='multiclbinaryass')
+       mean_auc = auroc(mean_pred, labels, task='binary')
+       
+       self.log_dict({"val_concat_auc" :  auc, "val_img_auc" : img_auc, "val_clinical_auc" : clinical_auc, "val_auc" : mean_auc}, prog_bar=True, logger=True)
+        
+    def test_step(self, batch, batch_idx):
+        
+        img, clinical, label = batch
+        img_pred, clinical_pred, pred, mean_pred = self(img, clinical)
+        output = {'pred':pred,'img_pred' : img_pred, 'clinical_pred' : clinical_pred, 'mean_pred' : mean_pred,   "label" :label}
+        
+        return output
+
+    def test_epoch_end(self, outputs):
+        
+       if self.trainer.num_nodes > 1:
+           outputs = self.all_gather(outputs)
+       img_preds = torch.cat([x['img_pred'] for x in outputs])
+       clinical_preds = torch.cat([x['clinical_pred'] for x in outputs])
+       preds = torch.cat([x['pred'] for x in outputs])
+       mean_pred = torch.cat([x['mean_pred'] for x in outputs])
+       labels = torch.cat([x['label'] for x in outputs])
+       
+       img_auc = auroc(img_preds, labels, task='binary')
+       clinical_auc = auroc(clinical_preds, labels, task='binary')
+       auc = auroc(preds, labels, task='multiclbinaryass')
+       mean_auc = auroc(mean_pred, labels, task='binary')
+       
+       self.log_dict({"test_concat_auc" :  auc, "test_img_auc" : img_auc, "test_clinical_auc" : clinical_auc, "test_auc" : mean_auc}, prog_bar=True, logger=True)
+
+        
+    def configure_optimizers(self):
+        optimizer = getattr(optimizers,self.config['optimizer']['name'])(self.parameters(), **self.config['optimizer']['params'])
+        #scheduler = getattr(schedulers,self.config['scheduler']['name'])(optimizer,**self.config['scheduler']['params'])
+        
+        return [optimizer]#,[scheduler]
