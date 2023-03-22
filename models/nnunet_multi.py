@@ -366,3 +366,83 @@ class nnUnetMultiModalFeatureConcat1DCNN(nn.Module):
         x = torch.cat([x, clinical], dim=1)
         x = self.head(x)
         return x
+    
+
+class nnUnetMultiModalFeatureConcatTest5(nn.Module):
+    def __init__(self, clinical_feature_len,plans_path,head='linear', num_classes=2,weight=None,seg_weight=None) -> None:
+        super().__init__()
+        
+        self.backbone =nnUnetBackbone(plans_path,seg_weight,weight)
+        self.clinical_backbone = nn.Sequential(nn.Linear(clinical_feature_len, int(clinical_feature_len/2)),nn.LeakyReLU())
+
+        if head == 'linear':
+            self.head = nn.Linear(320+clinical_feature_len, num_classes)
+    
+        elif head == 'mlp':
+            self.head = nn.Sequential(
+                nn.Linear(2*int(clinical_feature_len/2), int((2*int(clinical_feature_len/2))/2)),
+                nn.LeakyReLU(inplace=True),
+                nn.Linear(2*((40+int(clinical_feature_len/2))/2), num_classes)
+            )
+        
+        self.img_head = nn.Linear(40, num_classes)
+        self.clinical_head = nn.Linear(int(clinical_feature_len/2), num_classes)
+    
+    def forward(self, img, clinical):
+        x = self.backbone(img)
+        x = x.flatten(start_dim=1)
+        
+        x = nn.Linear(320, 160)(x)
+        x = nn.LeakyReLU(inplace=True)(x)
+        x = nn.Linear(160, 80)(x)
+        x = nn.LeakyReLU(inplace=True)(x)
+        x = nn.Linear(80, int(clinical.shape[1]/2))(x)
+        x = nn.LeakyReLU(inplace=True)(x)
+        
+        c_x = self.clinical_backbone(clinical)
+        img_out = self.img_head(x)
+        clinical_out = self.clinical_head(c_x)
+        x = x + c_x
+        out = self.head(x)
+        mean_out = torch.mean(torch.stack([img_out, clinical_out, out]), dim=0)
+        return img_out, clinical_out, out ,mean_out
+    
+
+class nnUnetMultiModalFeatureConcatTest6(nn.Module):
+    def __init__(self, clinical_feature_len,plans_path,head='linear', num_classes=2,weight=None,seg_weight=None) -> None:
+        super().__init__()
+        
+        self.backbone =nnUnetBackbone(plans_path,seg_weight,weight)
+        self.clinical_backbone = nn.Sequential(nn.Linear(clinical_feature_len, int(clinical_feature_len/2)),nn.LeakyReLU())
+
+        if head == 'linear':
+            self.head = nn.Linear(320+clinical_feature_len, num_classes)
+    
+        elif head == 'mlp':
+            self.head = nn.Sequential(
+                nn.Linear(2*int(clinical_feature_len/2), int((2*int(clinical_feature_len/2))/2)),
+                nn.LeakyReLU(inplace=True),
+                nn.Linear(2*((40+int(clinical_feature_len/2))/2), num_classes)
+            )
+        
+        self.img_head = nn.Linear(40, num_classes)
+        self.clinical_head = nn.Linear(int(clinical_feature_len/2), num_classes)
+    
+    def forward(self, img, clinical):
+        x = self.backbone(img)
+        x = x.flatten(start_dim=1)
+        
+        x = nn.Linear(320, 160)(x)
+        x = nn.LeakyReLU(inplace=True)(x)
+        x = nn.Linear(160, 80)(x)
+        x = nn.LeakyReLU(inplace=True)(x)
+        x = nn.Linear(80, int(clinical.shape[1]/2))(x)
+        x = nn.LeakyReLU(inplace=True)(x)
+        
+        c_x = self.clinical_backbone(clinical)
+        img_out = self.img_head(x)
+        clinical_out = self.clinical_head(c_x)
+        x = x * c_x
+        out = self.head(x)
+        mean_out = torch.mean(torch.stack([img_out, clinical_out, out]), dim=0)
+        return img_out, clinical_out, out ,mean_out
