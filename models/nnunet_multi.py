@@ -327,6 +327,7 @@ class nnUnetMultiModalFeatureConcatTest3(nn.Module):
         img_out = self.img_head(x)
         clinical_out = self.clinical_head(c_x)
         concat_x = torch.cat([x, c_x], dim=1)
+        concat_x = nn.Dropout(0.5)(concat_x)
         out = self.head(concat_x)
         mean_out = torch.mean(torch.stack([img_out, clinical_out, out]), dim=0)
         return img_out, clinical_out, out ,mean_out
