@@ -420,9 +420,9 @@ class nnUnetMultiModalFeatureConcatTest6(nn.Module):
     
         elif head == 'mlp':
             self.head = nn.Sequential(
-                nn.Linear(2*int(clinical_feature_len/2), int((2*int(clinical_feature_len/2))/2)),
+                nn.Linear(2*int(clinical_feature_len/2), 2*int((2*int(clinical_feature_len/2))/2)),
                 nn.LeakyReLU(inplace=True),
-                nn.Linear(2*((40+int(clinical_feature_len/2))/2), num_classes)
+                nn.Linear(2*int((2*int(clinical_feature_len/2))/2), num_classes)
             )
         
         self.img_head = nn.Linear(40, num_classes)
