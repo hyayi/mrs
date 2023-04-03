@@ -16,7 +16,7 @@ import pandas as pd
 import optuna
 from optuna.integration import PyTorchLightningPruningCallback
 import pickle
-from lighthining_model import MRSClassficationMultiModal
+from lighthining_model import MRSClassficationImgOnly
 
 torch.multiprocessing.set_sharing_strategy('file_system')
 warnings.filterwarnings(action='ignore')
@@ -34,7 +34,7 @@ def infer(args):
     for fold in range(args.fold_num):
         data_dm = getattr(datamoules, config['datamodule']['name'])(data_config=config['datamodule'],fold=fold, fold_num=args.fold_num)
         
-        model = MRSClassficationMultiModal.load_from_checkpoint(args.model_path[fold])
+        model = MRSClassficationImgOnly.load_from_checkpoint(args.model_path[fold])
         trainer = pl.Trainer(accelerator=args.accelerator, devices=args.devices)
         
         train_predictions = trainer.predict(model, dataloaders = data_dm.train_infer_dataloader())
