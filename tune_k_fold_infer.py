@@ -66,7 +66,7 @@ if __name__=="__main__" :
     parser.add_argument("--save_path", type=str, default= './test/')
     parser.add_argument("--devices", type=int, default= 1)
     parser.add_argument("--strategy", type=str, default= None)
-    parser.add_argument("--model_path", action='append', dest='model_path_list')
+    parser.add_argument("--model_path", action='append', dest='--model_path_list')
     parser.add_argument("--fold_num", type=int, default= 5)
     
     args = parser.parse_args()
