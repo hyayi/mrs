@@ -34,12 +34,12 @@ def infer(args):
     for fold in range(args.fold_num):
         data_dm = getattr(datamoules, config['datamodule']['name'])(data_config=config['datamodule'],fold=fold, fold_num=args.fold_num)
         
-        model = MRSClassficationMultiModal.load_from_checkpoint(args.model_path)
+        model = MRSClassficationMultiModal.load_from_checkpoint(args.model_path[fold])
         trainer = pl.Trainer(accelerator=args.accelerator, devices=args.devices)
         
-        train_predictions = trainer.predict(model, dataloaders = data_dm.train_infer_dataloader(), ckpt_path=args.model_path[fold])
-        val_predictions = trainer.predict(model, dataloaders = data_dm.val_dataloader(), ckpt_path=args.model_path[fold])
-        test_predictions = trainer.predict(model, dataloaders = data_dm.test_dataloader(),ckpt_path=args.model_path[fold])
+        train_predictions = trainer.predict(model, dataloaders = data_dm.train_infer_dataloader())
+        val_predictions = trainer.predict(model, dataloaders = data_dm.val_dataloader())
+        test_predictions = trainer.predict(model, dataloaders = data_dm.test_dataloader())
         
         train_result[f'{fold}'] = train_predictions
         test_result[f'{fold}'] = test_predictions
