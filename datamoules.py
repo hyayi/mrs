@@ -26,7 +26,7 @@ class BrainDataModule(pl.LightningDataModule):
         self.train_ds = self.dataset(data_df=self.train, transforms= self.train_transforms, data_dir=self.config['dataset']['params']['data_dir'])
         return DataLoader(self.train_ds, batch_size=self.config['dataloader']['params']['batch_size'],num_workers=self.config['dataloader']['params']['num_workers'], pin_memory=self.config['dataloader']['params']['pin_memory'],shuffle=True)
     
-    def train_dataloader_infer(self):
+    def train_infer_dataloader(self):
         self.train_ds = self.dataset(data_df=self.train, transforms= self.val_transforms, data_dir=self.config['dataset']['params']['data_dir'])
         return DataLoader(self.train_ds_infer, batch_size=self.config['dataloader']['params']['batch_size'],num_workers=self.config['dataloader']['params']['num_workers'], pin_memory=self.config['dataloader']['params']['pin_memory'],shuffle=False)
     
