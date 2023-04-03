@@ -111,7 +111,13 @@ class MRSClassficationMultiModal(pl.LightningModule):
         self.log('FP',confusion_matrix_value[0][1])
         self.log('FN',confusion_matrix_value[1][0])
         self.log('TP',confusion_matrix_value[1][1])
+    
+    def predict_step(self, batch, batch_idx):
         
+        img, clinical, label,img_name = batch
+        pred = self(img, clinical)
+        return {'pred':pred,'label':label ,'img_name':img_name}
+
     def configure_optimizers(self):
         optimizer = getattr(optimizers,self.config['optimizer']['name'])(self.parameters(), **self.config['optimizer']['params'])
         scheduler = getattr(schedulers,self.config['scheduler']['name'])(optimizer,**self.config['scheduler']['params'])
