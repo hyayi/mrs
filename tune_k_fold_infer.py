@@ -37,9 +37,9 @@ def infer(args):
         model = MRSClassficationMultiModal.load_from_checkpoint(args.model_path)
         trainer = pl.Trainer(accelerator=args.accelerator, devices=args.devices)
         
-        train_predictions = trainer.predict(model, dataloaders = data_dm.train_infer_dataloader(), ckpt_path=args.model_path_list[fold])
-        val_predictions = trainer.predict(model, dataloaders = data_dm.val_dataloader(), ckpt_path=args.model_path_list[fold])
-        test_predictions = trainer.predict(model, dataloaders = data_dm.test_dataloader(),ckpt_path=args.model_path_list[fold])
+        train_predictions = trainer.predict(model, dataloaders = data_dm.train_infer_dataloader(), ckpt_path=args.model_path[fold])
+        val_predictions = trainer.predict(model, dataloaders = data_dm.val_dataloader(), ckpt_path=args.model_path[fold])
+        test_predictions = trainer.predict(model, dataloaders = data_dm.test_dataloader(),ckpt_path=args.model_path[fold])
         
         train_result[f'{fold}'] = train_predictions
         test_result[f'{fold}'] = test_predictions
@@ -66,7 +66,7 @@ if __name__=="__main__" :
     parser.add_argument("--save_path", type=str, default= './test/')
     parser.add_argument("--devices", type=int, default= 1)
     parser.add_argument("--strategy", type=str, default= None)
-    parser.add_argument("--model_path", action='append', dest='--model_path_list')
+    parser.add_argument("--model_path", nargs='+')
     parser.add_argument("--fold_num", type=int, default= 5)
     
     args = parser.parse_args()
