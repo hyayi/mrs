@@ -107,7 +107,12 @@ class MRSClassficationImgOnly(pl.LightningModule):
         self.log("test_auc", auc, prog_bar=True, logger=True,on_epoch=True)
         self.log("test_f1_micro", f1_micro,prog_bar=True, logger=True)
         self.log("test_f1_macro", f1_macro,prog_bar=True, logger=True)
-               
+        
+    def predict_step(self, batch, batch_idx):
+        
+        img, clinical, label,img_name = batch
+        pred = self(img, clinical)
+        return {'pred':pred,'label':label ,'img_name':img_name}          
     def configure_optimizers(self):
         optimizer = getattr(optimizers,self.config['optimizer']['name'])(self.parameters(), **self.config['optimizer']['params'])
         scheduler = getattr(schedulers,self.config['scheduler']['name'])(optimizer,**self.config['scheduler']['params'])
