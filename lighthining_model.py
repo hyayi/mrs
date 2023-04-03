@@ -110,8 +110,8 @@ class MRSClassficationImgOnly(pl.LightningModule):
         
     def predict_step(self, batch, batch_idx):
         
-        img, clinical, label,img_name = batch
-        pred = self(img, clinical)
+        img, label,img_name = batch
+        pred = self(img)
         return {'pred':pred,'label':label ,'img_name':img_name}          
     def configure_optimizers(self):
         optimizer = getattr(optimizers,self.config['optimizer']['name'])(self.parameters(), **self.config['optimizer']['params'])
