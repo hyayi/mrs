@@ -21,7 +21,7 @@ datamodule :
       pin_memory : False
 
   transforms:
-    train:gu
+    train:
       LoadImaged : 
         keys : "img"
       AddChanneld :
