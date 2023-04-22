@@ -10,7 +10,7 @@ import schedulers
 
 class MRSClassficationImgOnly(pl.LightningModule):
 
-    def __init__(self,model_config, class_weights)
+    def __init__(self,model_config, class_weights) :
         super().__init__()
         self.save_hyperparameters()
         self.config = model_config
@@ -22,7 +22,7 @@ class MRSClassficationImgOnly(pl.LightningModule):
             
         print("class weights : ",self.class_weights)
         self.num_classes = self.config['model']['params']['num_classes']
-        self.model = getattr(models.model,self.config['model']['name'])(return_features=return_features,**self.config['model']['params'])
+        self.model = getattr(models.model,self.config['model']['name'])(**self.config['model']['params'])
         self.clsloss = nn.CrossEntropyLoss(weight=self.class_weights)
 
 
