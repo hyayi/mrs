@@ -1,0 +1,75 @@
+    
+datamodule :
+  name : "BrainDataModule"
+  params : 
+
+  dataset :
+    name : 'MRSImaOlnyDatasetInfer'
+    params : 
+      data_dir : "/home/lab/inseo/brain/data/total2"
+  
+  data_load_params :
+    train_path : "/home/lab/inseo/brain/data/total2/train_mrs_3.csv"
+    val_path : "/home/lab/inseo/brain/data/total2/val_mrs_3.csv"
+    test_path : "/home/lab/inseo/brain/data/total2/test_mrs_3.csv"
+
+  dataloader : 
+    name :
+    params :
+      batch_size : 4
+      num_workers : 7
+      pin_memory : False
+
+  transforms:
+    train:gu
+      LoadImaged : 
+        keys : "img"
+      AddChanneld :
+        keys : "img"
+
+      Spacingd : 
+        keys : "img"
+        pixdim : [1,1,5]
+
+      Orientationd :
+        keys : "img"
+        axcodes : 'RSA'
+
+      ScaleIntensityd :
+        keys : "img"
+
+      Resized :
+        keys : "img"
+        spatial_size : [256,256,48]
+
+      RandRotated : 
+        keys : "img"
+        range_x : 0.2617993877991494
+
+      EnsureTyped :
+        keys : "img"
+
+    val:
+      LoadImaged : 
+        keys : "img"
+
+      AddChanneld :
+        keys : "img"
+
+      Spacingd : 
+        keys : "img"
+        pixdim : [1,1,5]
+
+      Orientationd :
+        keys : "img"
+        axcodes : 'RSA'
+
+      ScaleIntensityd :
+        keys : "img"
+
+      Resized :
+        keys : "img"
+        spatial_size :  [256,256,48]
+      EnsureTyped :
+        keys : "img"
+
