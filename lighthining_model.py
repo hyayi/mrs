@@ -10,7 +10,7 @@ import schedulers
 
 class MRSClassficationImgOnly(pl.LightningModule):
 
-    def __init__(self,model_config, class_weights,return_features=False):
+    def __init__(self,model_config, class_weights)
         super().__init__()
         self.save_hyperparameters()
         self.config = model_config
@@ -21,7 +21,6 @@ class MRSClassficationImgOnly(pl.LightningModule):
             self.class_weights =class_weights
             
         print("class weights : ",self.class_weights)
-        self.return_features = return_features
         self.num_classes = self.config['model']['params']['num_classes']
         self.model = getattr(models.model,self.config['model']['name'])(return_features=return_features,**self.config['model']['params'])
         self.clsloss = nn.CrossEntropyLoss(weight=self.class_weights)
@@ -112,12 +111,10 @@ class MRSClassficationImgOnly(pl.LightningModule):
     def predict_step(self, batch, batch_idx):
         
         img, label,img_name = batch
-        if self.return_features:
-            pred, features = self(img)
-            return {'pred':pred,'label':label ,'features':features, img_name:'img_name'}   
-        else :
-            pred = self(img)
-            return {'pred':pred,'label':label ,'img_name':img_name}    
+
+        pred, features = self(img)
+        return {'pred':pred,'label':label ,'features':features, img_name:'img_name'}   
+
           
     def configure_optimizers(self):
         optimizer = getattr(optimizers,self.config['optimizer']['name'])(self.parameters(), **self.config['optimizer']['params'])
