@@ -33,11 +33,11 @@ class Mc3_18(nn.Module):
 class nnUnet(Generic_UNet):
     """Training with image only"""
 
-    def __init__(self, plans_path,num_classes=2, weight=None):
+    def __init__(self, plans_path,num_classes=2, weight=None, return_features=False):
         
         parameter = create_prameter(plans_path)
         super().__init__(**parameter)
-
+        self.retrun_features = return_features
         if weight :
             self.load_state_dict(torch.load(weight)['state_dict'],strict=False)
         
@@ -52,7 +52,8 @@ class nnUnet(Generic_UNet):
         x = self.conv_blocks_context[-1](x)
         img_em = F.adaptive_avg_pool3d(x, (1, 1,1)).view(x.shape[0],-1)
         out = self.fc(img_em)
-   
+        if self.retrun_features:
+            return out,img_em
         return out
     
 class nnUnetGL(Generic_UNet):

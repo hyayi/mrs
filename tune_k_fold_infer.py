@@ -35,6 +35,7 @@ def infer(args):
         data_dm = getattr(datamoules, config['datamodule']['name'])(data_config=config['datamodule'],fold=fold, fold_num=args.fold_num)
         
         model = MRSClassficationImgOnly.load_from_checkpoint(args.model_path[fold])
+        model.return_features = True
         trainer = pl.Trainer(accelerator=args.accelerator, devices=args.devices)
         
         train_predictions = trainer.predict(model, dataloaders = data_dm.train_infer_dataloader())
