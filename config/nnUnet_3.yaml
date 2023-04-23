@@ -62,7 +62,7 @@ datamodule :
 
       Orientationd :
         keys : "img"
-        axcodes : 'RAS'
+        axcodes : 'RSA'
 
       ScaleIntensityd :
         keys : "img"
@@ -91,7 +91,7 @@ datamodule :
 
       Orientationd :
         keys : "img"
-        axcodes : 'RAS'
+        axcodes : 'RSA'
 
       ScaleIntensityd :
         keys : "img"
