@@ -41,7 +41,7 @@ datamodule :
   dataloader : 
     name :
     params :
-      batch_size : 4
+      batch_size : 16
       num_workers : 7
       pin_memory : False
 
