@@ -51,7 +51,7 @@ class nnUnet(Generic_UNet):
         x = self.conv_blocks_context[-1](x)
         img_em = F.adaptive_avg_pool3d(x, (1, 1,1)).view(x.shape[0],-1)
         out = self.fc(img_em)
-        return  out,img_em
+        return  out
     
 class nnUnetGL(Generic_UNet):
     """Training with image only"""
