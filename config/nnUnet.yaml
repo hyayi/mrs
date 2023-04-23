@@ -56,16 +56,16 @@ datamodule :
         keys : "img"
         pixdim : [1,1,5]
 
-      Orientationd :
-        keys : "img"
-        axcodes : 'RSA'
-
-      ScaleIntensityd :
-        keys : "img"
-
       Resized :
         keys : "img"
         spatial_size : [256,256,48]
+
+      Orientationd :
+        keys : "img"
+        axcodes : 'RAS'
+
+      ScaleIntensityd :
+        keys : "img"
 
       RandRotated : 
         keys : "img"
@@ -85,16 +85,17 @@ datamodule :
         keys : "img"
         pixdim : [1,1,5]
 
+      Resized :
+        keys : "img"
+        spatial_size :  [256,256,48]
+
       Orientationd :
         keys : "img"
-        axcodes : 'RSA'
+        axcodes : 'RAS'
 
       ScaleIntensityd :
         keys : "img"
 
-      Resized :
-        keys : "img"
-        spatial_size :  [256,256,48]
       EnsureTyped :
         keys : "img"
 
