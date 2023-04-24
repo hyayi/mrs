@@ -41,9 +41,9 @@ datamodule :
   dataloader : 
     name :
     params :
-      batch_size : 4
+      batch_size : 12
       num_workers : 7
-      pin_memory : False
+      pin_memory : True
 
   transforms:
     train:
@@ -62,7 +62,7 @@ datamodule :
 
       Orientationd :
         keys : "img"
-        axcodes : 'RSA'
+        axcodes : 'RAS'
 
       ScaleIntensityd :
         keys : "img"
@@ -91,7 +91,7 @@ datamodule :
 
       Orientationd :
         keys : "img"
-        axcodes : 'RSA'
+        axcodes : 'RAS'
 
       ScaleIntensityd :
         keys : "img"
