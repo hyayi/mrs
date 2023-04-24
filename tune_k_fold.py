@@ -26,8 +26,8 @@ def objective(trial):
     with open(args.config_path) as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
         
-    config['lighthining_model']['optimizer']['lr'] = trial.suggest_float("lr", 0.00001, 0.001)
-    config['lighthining_model']['optimizer']['gamma'] = trial.suggest_float("gamma", 0.1, 0.9)
+    #config['lighthining_model']['optimizer']['lr'] = trial.suggest_float("lr", 0.00001, 0.001)
+    #config['lighthining_model']['optimizer']['gamma'] = trial.suggest_float("gamma", 0.1, 0.9)
     
     test_result = {}
     val_result = {}
@@ -72,7 +72,7 @@ if __name__=="__main__" :
     parser.add_argument("--devices", type=int, default= 1)
     parser.add_argument("--strategy", type=str, default= None)
     parser.add_argument("--fold_num", type=int, default= 5)
-    parser.add_argument("--n_trials", type=int, default= 5)
+    parser.add_argument("--n_trials", type=int, default= 1)
     
     global args
     args = parser.parse_args()
