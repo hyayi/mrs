@@ -40,7 +40,7 @@ def train(args):
     checkpoint_callback = pl.callbacks.ModelCheckpoint(dirpath=f"{args.save_path}/", save_top_k=1, monitor="val_auc",filename=f'{args.model_name}'+'-{epoch:02d}-{val_auc:.3f}',mode='max')
     callbacks = [checkpoint_callback]
     wandb_logger = WandbLogger(project="BrainMrs", name=args.model_name, save_dir=f"{args.save_path}")
-    trainer = pl.Trainer(accelerator=args.accelerator, devices=args.devices,callbacks=callbacks,strategy=args.strategy,logger=wandb_logger,**config['trainer'])
+    trainer = pl.Trainer(accelerator=args.accelerator, devices=args.devices,callbacks=callbacks,strategy=args.strategy,logger=wandb_logger,max_epochs=args.epoch,**config['trainer'])
     
     trainer.fit(model,data_dm)
     
@@ -57,6 +57,7 @@ if __name__=="__main__" :
     parser.add_argument("--devices", type=int, default= 1)
     parser.add_argument("--strategy", type=str, default= None)
     parser.add_argument("--fold", type=int, default= None)
+    parser.add_argument("--epoch", type=int, default= 100)
     
     args = parser.parse_args()
     

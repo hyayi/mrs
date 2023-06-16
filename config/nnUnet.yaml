@@ -77,4 +77,3 @@ datamodule :
 
 trainer :
   precision : 16
-  max_epochs : 50
