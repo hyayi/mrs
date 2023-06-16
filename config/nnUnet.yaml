@@ -31,7 +31,7 @@ datamodule :
   dataset :
     name : 'MRSImaOlnyDataset'
     params : 
-      data_dir : "/home/lab/inseo/nnUnet/nnUNet_raw/Dataset014_BrainMrs/imageTr"
+      data_dir : "/home/lab/inseo/nnUnet/nnUNet_raw/Dataset014_BrainMrs/imagesTr"
   
   data_load_params :
     train_path : "/home/lab/inseo/nnUnet/nnUNet_raw/Dataset014_BrainMrs/train.csv"
