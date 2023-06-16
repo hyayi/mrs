@@ -33,7 +33,7 @@ def train(args):
     with open(args.config_path) as f:
         config = yaml.load(f, Loader=yaml.FullLoader)
 
-    data_dm = getattr(datamoules, config['datamodule']['name'])(data_config=config['datamodule'])
+    data_dm = getattr(datamoules, config['datamodule']['name'])(data_config=config['datamodule'],fold=args.fold)
     class_weights = data_dm.class_weights
     model = getattr(lighthining_model, config['lighthining_model']['name'])(model_config=config['lighthining_model'],class_weights=class_weights)
     
@@ -43,8 +43,6 @@ def train(args):
     trainer = pl.Trainer(accelerator=args.accelerator, devices=args.devices,callbacks=callbacks,strategy=args.strategy,logger=wandb_logger,**config['trainer'])
     
     trainer.fit(model,data_dm)
-    data_dm.setup()
-    trainer.test(model,datamodule = data_dm, ckpt_path=checkpoint_callback.best_model_path)
     
 
 if __name__=="__main__" :
@@ -58,6 +56,7 @@ if __name__=="__main__" :
     parser.add_argument("--save_path", type=str, default= './')
     parser.add_argument("--devices", type=int, default= 1)
     parser.add_argument("--strategy", type=str, default= None)
+    parser.add_argument("--fold", type=int, default= None)
     
     args = parser.parse_args()
     

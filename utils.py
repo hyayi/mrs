@@ -16,17 +16,13 @@ def seed_everything(seed):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False
     
-def data_load(train_path:str, 
-              val_path:str, 
-              fold:[str,None] = None)
+def data_load(train_path:str,  
+              fold = 0) :
 
-    train = pd.read_csv(train_path)
-    val =pd.read_csv(val_path)
-    
-    if fold is not None :
-        toatl = pd.concat([train,val],axis=0)
-        train = total[total[fold] == "train"]
-        val = total[total[fold] == "val"]
+    total = pd.read_csv(train_path)
+    fold = f"fold{fold}"
+    train = total[total[fold] == "train"]
+    val = total[total[fold] == "val"]
     
     print(fold)    
     print(f"train counte:{len(train)}, train 0 count : {train['label'].value_counts()[0]}, train 1 count : {train['label'].value_counts()[1]}")

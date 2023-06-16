@@ -112,8 +112,8 @@ class MRSClassficationImgOnly(pl.LightningModule):
         
         img, label,img_name = batch
 
-        pred, features = self(img)
-        return {'pred':pred,'label':label ,'features':features, 'img_name':img_name}   
+        pred = self(img)
+        return {'pred':pred,'label':label ,'img_name':img_name}   
 
           
     def configure_optimizers(self):
