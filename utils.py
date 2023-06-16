@@ -23,7 +23,8 @@ def data_load(train_path:str,
     fold = f"fold{fold}"
     train = total[total[fold] == "train"]
     val = total[total[fold] == "val"]
-    
+    train = train.reset_index(drop=True)
+    val = val.reset_index(drop=True)
     print(fold)    
     print(f"train counte:{len(train)}, train 0 count : {train['label'].value_counts()[0]}, train 1 count : {train['label'].value_counts()[1]}")
     print(f"val counte:{len(val)}, val 0 count : {val['label'].value_counts()[0]}, val 1 count : {val['label'].value_counts()[1]}")
