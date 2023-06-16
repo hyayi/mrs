@@ -49,20 +49,9 @@ datamodule :
     train:
       LoadImaged : 
         keys : "img"
+
       AddChanneld :
         keys : "img"
-
-      Spacingd : 
-        keys : "img"
-        pixdim : [1,1,5]
-
-      Resized :
-        keys : "img"
-        spatial_size : [256,256,48]
-
-      Orientationd :
-        keys : "img"
-        axcodes : 'RAS'
 
       ScaleIntensityd :
         keys : "img"
@@ -81,18 +70,6 @@ datamodule :
       AddChanneld :
         keys : "img"
 
-      Spacingd : 
-        keys : "img"
-        pixdim : [1,1,5]
-
-      Resized :
-        keys : "img"
-        spatial_size :  [256,256,48]
-
-      Orientationd :
-        keys : "img"
-        axcodes : 'RAS'
-
       ScaleIntensityd :
         keys : "img"
 
@@ -102,4 +79,3 @@ datamodule :
 trainer :
   precision : 16
   max_epochs : 50
-  gradient_clip_val : 10
