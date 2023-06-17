@@ -14,8 +14,9 @@ class MRSImaOlnyDataset(torch.utils.data.Dataset):
         image_path = f"{self.data_dir}/{self.data_df['image'][index]}_0000.nii.gz"
         image_dict =  {'img' : image_path}
         image_data = self.transforms(image_dict)
-        img = torch.transpose(image_data['img'], 1, 3)
-        img = torch.transpose(img, 2, 3)
+        img = image_data['img']
+        #img = torch.transpose(image_data['img'], 1, 3)
+        #img = torch.transpose(img, 2, 3)
         return img, label
 
 
