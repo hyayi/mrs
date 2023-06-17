@@ -1,0 +1,104 @@
+lighthining_model :
+  name : "MRSClassficationImgOnly"
+  parmas :
+
+  model :
+    name : "nnUnetGL"
+    params :
+      num_classes : 2
+      plans_path : 'D:/study_d/project/brain/code/img_talu/model_best.model.pkl'
+      fc_list : [10,10,10]
+      
+  optimizer :
+    name : "AdamW"
+    params : 
+      lr : 0.0001
+      weight_decay : 0.0005
+  
+  scheduler :
+    name : "CosineAnnealingWarmUpRestarts"
+    params : 
+      T_0 : 50
+      T_mult : 1
+      eta_max : 0.001
+      T_up : 10
+      gamma : 0.5
+    
+datamodule :
+  name : "BrainDataModule"
+  params : 
+
+  dataset :
+    name : 'MRSImaOlnyDataset'
+    params : 
+      data_dir : "D:/study_d/project/brain/code/data/image"
+  
+  data_load_params :
+    train_path : "D:/study_d/project/brain/code/data/annotation/val.csv"
+    val_path : "D:/study_d/project/brain/code/data/annotation/val.csv"
+    test_path : "D:/study_d/project/brain/code/data/annotation/val.csv"
+
+  dataloader : 
+    name :
+    params :
+      batch_size : 32
+      num_workers : 0
+      pin_memory : False
+
+  transforms:
+    train:
+      LoadImaged : 
+        keys : "img"
+      AddChanneld :
+        keys : "img"
+
+      Spacingd : 
+        keys : "img"
+        pixdim : [1,1,5]
+
+      Orientationd :
+        keys : "img"
+        axcodes : 'RSA'
+
+      ScaleIntensityd :
+        keys : "img"
+
+      Resized :
+        keys : "img"
+        spatial_size : [32,32,24]
+
+      RandRotated : 
+        keys : "img"
+        range_x : 0.2617993877991494
+
+      EnsureTyped :
+        keys : "img"
+
+    val:
+      LoadImaged : 
+        keys : "img"
+
+      AddChanneld :
+        keys : "img"
+
+      Spacingd : 
+        keys : "img"
+        pixdim : [1,1,5]
+
+      Orientationd :
+        keys : "img"
+        axcodes : 'RSA'
+
+      ScaleIntensityd :
+        keys : "img"
+
+      Resized :
+        keys : "img"
+        spatial_size :  [32,32,24]
+      EnsureTyped :
+        keys : "img"
+
+trainer :
+  precision : 16
+  max_epochs : 2
+  gradient_clip_val : 10
