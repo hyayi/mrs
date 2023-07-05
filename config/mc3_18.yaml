@@ -29,17 +29,16 @@ datamodule :
   dataset :
     name : 'MRSImaOlnyDataset'
     params : 
-      data_dir : "/home/lab/inseo/brain/data/total2"
+      data_dir : "/home/team2/inseo/nnUnet/nnUNet_raw/Dataset014_BrainMrs/imagesTr"
   
   data_load_params :
-    train_path : "/home/lab/inseo/brain/data/total2/train.csv"
-    val_path : "/home/lab/inseo/brain/data/total2/val.csv"
-    test_path : "/home/lab/inseo/brain/data/total2/test.csv"
+    train_path : "/home/team2/inseo/nnUnet/nnUNet_raw/Dataset014_BrainMrs/train.csv"
+
 
   dataloader : 
     name :
     params :
-      batch_size : 4
+      batch_size : 2
       num_workers : 7
       pin_memory : False
 
@@ -47,23 +46,12 @@ datamodule :
     train:
       LoadImaged : 
         keys : "img"
+
       AddChanneld :
         keys : "img"
 
-      Spacingd : 
-        keys : "img"
-        pixdim : [1,1,1]
-
-      Orientationd :
-        keys : "img"
-        axcodes : 'SPL'
-
       ScaleIntensityd :
         keys : "img"
-
-      Resized :
-        keys : "img"
-        spatial_size : [128,128,128]
 
       RandRotated : 
         keys : "img"
@@ -79,25 +67,11 @@ datamodule :
       AddChanneld :
         keys : "img"
 
-      Spacingd : 
-        keys : "img"
-        pixdim : [1,1,1]
-
-      Orientationd :
-        keys : "img"
-        axcodes : 'SPL'
-
       ScaleIntensityd :
         keys : "img"
-
-      Resized :
-        keys : "img"
-        spatial_size :  [128,128,128]
 
       EnsureTyped :
         keys : "img"
 
 trainer :
   precision : 16
-  max_epochs : 50
-  gradient_clip_val : 10
