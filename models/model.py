@@ -95,7 +95,7 @@ class Vit(nn.Module):
     def __init__(self,num_classes=2,img_size=(64,256,256), patch_size=(8,32,32) ) -> None:
         super().__init__()
         
-        self.backbone = ViT(in_channels=1, img_size=img_size,num_classes=num_classes,patch_size=patch_size, pos_embed='conv',classification=True)
+        self.backbone = ViT(in_channels=1, img_size=img_size,num_classes=num_classes,patch_size=patch_size, pos_embed='conv',classification=True, post_activation=None)
         
     def forward(self, img):
         x , _ = self.backbone(img)
