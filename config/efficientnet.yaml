@@ -5,6 +5,7 @@ lighthining_model :
   model :
     name : "EfficientNet"
     params :
+      num_classes : 2
       
   optimizer :
     name : "AdamW"
