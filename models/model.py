@@ -5,7 +5,7 @@ from nnunet.network_architecture.generic_UNet import Generic_UNet
 from nnunet.network_architecture.initialization import InitWeights_He
 import torch.nn.functional as F
 import torch
-from monai.networks.nets import ViT 
+from monai.networks.nets import ViT,EfficientNetBN
 
 class R2plus1d_18(nn.Module):
     def __init__(self, num_classes=2) -> None:
@@ -99,4 +99,12 @@ class Vit(nn.Module):
         
     def forward(self, img):
         x , _ = self.backbone(img)
+        return x
+        
+class EfficientNet(nn.Module):
+    def __init__(self, model_name = "efficientnet-b7" ,pretrained=False,spatial_dims=3, in_channels= 1, num_classes = 2):
+        super().__init__()
+        self.backbone = EfficientNetBN( model_name = model_name ,pretrained=pretrained,spatial_dims=spatial_dims, in_channels= in_channels, num_classes =num_classes)
+    def forward(self,img):
+        x = self.backbone(img)
         return x
