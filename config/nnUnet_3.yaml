@@ -6,8 +6,7 @@ lighthining_model :
     name : "nnUnet"
     params :
       num_classes : 2
-      plans_path : '/home/lab/inseo/brain/model_best.model.pkl'
-      weight : '/home/lab/inseo/brain/model_best.model'
+      plans_path : '/home/team2/inseo/brain/model_best.model.pkl'
       
   optimizer :
     name : "AdamW"
@@ -31,39 +30,26 @@ datamodule :
   dataset :
     name : 'MRSImaOlnyDataset'
     params : 
-      data_dir : "/home/lab/inseo/brain/data/total2"
+      data_dir : "/home/team2/inseo/nnUnet/nnUNet_raw/Dataset014_BrainMrs/imagesTr"
   
   data_load_params :
-    train_path : "/home/lab/inseo/brain/data/total2/train_mrs_3.csv"
-    val_path : "/home/lab/inseo/brain/data/total2/val_mrs_3.csv"
-    test_path : "/home/lab/inseo/brain/data/total2/test_mrs_3.csv"
+    train_path : "/home/team2/inseo/nnUnet/nnUNet_raw/Dataset014_BrainMrs/train3.csv"
+
 
   dataloader : 
     name :
     params :
-      batch_size : 8
+      batch_size : 2
       num_workers : 7
       pin_memory : False
-
 
   transforms:
     train:
       LoadImaged : 
         keys : "img"
+
       AddChanneld :
         keys : "img"
-
-      Spacingd : 
-        keys : "img"
-        pixdim : [1,1,5]
-
-      Resized :
-        keys : "img"
-        spatial_size : [256,256,48]
-
-      Orientationd :
-        keys : "img"
-        axcodes : 'RAS'
 
       ScaleIntensityd :
         keys : "img"
@@ -82,18 +68,6 @@ datamodule :
       AddChanneld :
         keys : "img"
 
-      Spacingd : 
-        keys : "img"
-        pixdim : [1,1,5]
-
-      Resized :
-        keys : "img"
-        spatial_size :  [256,256,48]
-
-      Orientationd :
-        keys : "img"
-        axcodes : 'RAS'
-
       ScaleIntensityd :
         keys : "img"
 
@@ -102,5 +76,3 @@ datamodule :
 
 trainer :
   precision : 16
-  max_epochs : 50
-  gradient_clip_val : 10
