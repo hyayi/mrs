@@ -1,0 +1,76 @@
+lighthining_model :
+  name : "MRSClassficationImgOnly"
+  parmas :
+
+  model :
+    name : "EfficientNet"
+    params :
+      
+  optimizer :
+    name : "AdamW"
+    params : 
+      lr : 0.0001
+      weight_decay : 0.0005
+  
+  scheduler :
+    name : "CosineAnnealingWarmUpRestarts"
+    params : 
+      T_0 : 50
+      T_mult : 1
+      eta_max : 0.001
+      T_up : 10
+      gamma : 0.5
+    
+datamodule :
+  name : "BrainDataModule"
+  params : 
+
+  dataset :
+    name : 'MRSImaOlnyDataset'
+    params : 
+      data_dir : "/home/team2/inseo/nnUnet/nnUNet_raw/Dataset014_BrainMrs/imagesTr"
+  
+  data_load_params :
+    train_path : "/home/team2/inseo/nnUnet/nnUNet_raw/Dataset014_BrainMrs/train.csv"
+
+
+  dataloader : 
+    name :
+    params :
+      batch_size : 2
+      num_workers : 7
+      pin_memory : False
+
+  transforms:
+    train:
+      LoadImaged : 
+        keys : "img"
+
+      AddChanneld :
+        keys : "img"
+
+      ScaleIntensityd :
+        keys : "img"
+
+      RandRotated : 
+        keys : "img"
+        range_x : 0.2617993877991494
+
+      EnsureTyped :
+        keys : "img"
+
+    val:
+      LoadImaged : 
+        keys : "img"
+
+      AddChanneld :
+        keys : "img"
+
+      ScaleIntensityd :
+        keys : "img"
+
+      EnsureTyped :
+        keys : "img"
+
+trainer :
+  precision : 16
