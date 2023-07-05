@@ -6,8 +6,8 @@ lighthining_model :
     name : "nnUnet"
     params :
       num_classes : 2
-      plans_path : '/home/lab/inseo/brain/model_best.model.pkl'
-      weight : '/home/lab/inseo/brain/model_best.model'
+      plans_path : '/home/team2/inseo/brain/model_best.model.pkl'
+      weight : None
       
   optimizer :
     name : "AdamW"
@@ -31,10 +31,10 @@ datamodule :
   dataset :
     name : 'MRSImaOlnyDataset'
     params : 
-      data_dir : "/home/lab/inseo/nnUnet/nnUNet_raw/Dataset014_BrainMrs/imagesTr"
+      data_dir : "/home/team2/inseo/nnUnet/nnUNet_raw/Dataset014_BrainMrs/imagesTr"
   
   data_load_params :
-    train_path : "/home/lab/inseo/nnUnet/nnUNet_raw/Dataset014_BrainMrs/train.csv"
+    train_path : "/home/team2/inseo/nnUnet/nnUNet_raw/Dataset014_BrainMrs/train.csv"
 
 
   dataloader : 
