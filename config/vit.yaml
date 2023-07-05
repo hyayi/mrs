@@ -77,3 +77,4 @@ datamodule :
 
 trainer :
   precision : 16
+  gradient_clip_val : 5
