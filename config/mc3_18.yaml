@@ -10,7 +10,7 @@ lighthining_model :
   optimizer :
     name : "AdamW"
     params : 
-      lr : 0.001
+      lr : 0.00001
       weight_decay : 0.0005
   
   scheduler :
