@@ -7,7 +7,7 @@ lighthining_model :
     params :
       num_classes : 2
       img_size : [256,256,40]
-      patch_size : [16,16,8]
+      patch_size : [32,32,5]
 
   optimizer :
     name : "AdamW"
@@ -20,7 +20,7 @@ lighthining_model :
     params : 
       T_0 : 50
       T_mult : 1
-      eta_max : 0.001
+      eta_max : 0.0001
       T_up : 10
       gamma : 0.5
     
