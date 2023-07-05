@@ -17,6 +17,7 @@ class MRSImaOlnyDataset(torch.utils.data.Dataset):
         img = image_data['img']
         img = torch.transpose(image_data['img'], 1, 3)
         img = torch.transpose(img, 2, 3)
+        print(img.shape)
         return img, label
 
 
