@@ -110,7 +110,7 @@ class EfficientNet(nn.Module):
         return x
         
 class Resnet50(nn.Module):
-    def __init__(self,input_chanel=1,pretrained=True,num_class=2):
+    def __init__(self,input_chanel=1,pretrained=True,num_classes=2):
         super().__init__()
         self.model_ft = models.video.r3d_18(pretrained=pretrained)
         prev_w = self.model_ft.stem[0].weight
