@@ -103,7 +103,7 @@ class Vit(nn.Module):
         return x
         
 class EfficientNet(nn.Module):
-    def __init__(self, model_name = "efficientnet-b7" ,pretrained=False,spatial_dims=3, in_channels= 1, num_classes = 2):
+    def __init__(self, model_name = "efficientnet-b3" ,pretrained=False,spatial_dims=3, in_channels= 1, num_classes = 2):
         super().__init__()
         self.backbone = EfficientNetBN( model_name = model_name ,pretrained=pretrained,spatial_dims=spatial_dims, in_channels= in_channels, num_classes =num_classes)
     def forward(self,img):
