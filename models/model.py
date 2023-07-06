@@ -109,7 +109,7 @@ class EfficientNet(nn.Module):
         x = self.backbone(img)
         return x
         
-class resnet50(nn.Module):
+class Resnet50(nn.Module):
     def __init__(self,input_chanel=1,pretrained=True,num_class=2):
         super().__init__()
         self.model_ft = models.video.r3d_18(pretrained=pretrained)
