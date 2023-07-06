@@ -6,6 +6,7 @@ from nnunet.network_architecture.initialization import InitWeights_He
 import torch.nn.functional as F
 import torch
 from monai.networks.nets import ViT,EfficientNetBN
+import torchvision.models as models
 
 class R2plus1d_18(nn.Module):
     def __init__(self, num_classes=2) -> None:
