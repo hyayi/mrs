@@ -27,7 +27,7 @@ def train(args):
     val_result = {}
     
     for fold in range(args.fold_num):
-        data_dm = getattr(datamoules, config['datamodule']['name'])(data_config=config['datamodule'],fold=fold, fold_num=args.fold_num)
+        data_dm = getattr(datamoules, config['datamodule']['name'])(data_config=config['datamodule'],fold=fold)
         class_weights = data_dm.class_weights
         
         model = getattr(lighthining_model, config['lighthining_model']['name'])(model_config=config['lighthining_model'],class_weights=class_weights)
