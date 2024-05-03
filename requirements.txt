@@ -1,7 +1,7 @@
 pandas
 scikit-learn
 pytorch-lightning==1.5.10
-monai==1.0.1
+monai==1.1.0
 torchio
 numpy
 torchmetrics==0.10.2
