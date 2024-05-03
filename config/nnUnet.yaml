@@ -6,7 +6,7 @@ lighthining_model :
     name : "nnUnet"
     params :
       num_classes : 2
-      plans_path : '/home/team2/inseo/brain/model_best.model.pkl'
+      plans_path : '/data/image/dataset/brain/model_best.model.pkl'
       
   optimizer :
     name : "AdamW"
